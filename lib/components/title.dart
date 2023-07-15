@@ -18,20 +18,24 @@ class CustomTitle extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 22.0,
             fontWeight: FontWeight.w600
           ),
         ),
         SizedBox.fromSize(size: const Size(0, 5)),
-        Text(
-          description,
-          style: TextStyle(
-            color: GREY_COLOR,
-            fontSize: 15.0,
-            fontWeight: FontWeight.w500,
-          )
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 25.0),
+          child: Text(
+            description,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: GREY_COLOR,
+              fontSize: 15.0,
+              fontWeight: FontWeight.w500,
+            )
+          ),
         )
       ],
     );

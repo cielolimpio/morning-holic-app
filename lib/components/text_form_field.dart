@@ -12,8 +12,8 @@ class CustomTextFormField extends StatefulWidget {
   int maxLength;
 
   CustomTextFormField({
-    required this.placeHolder,
     required this.textController,
+    required this.placeHolder,
     this.width = 320.0,
     this.height = 30.0,
     this.textInputFormatters,
