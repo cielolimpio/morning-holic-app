@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/screens/sign_up.dart';
 import 'package:morning_holic_app/screens/welcome.dart';
 
 void main() {
@@ -20,8 +21,8 @@ class MyApp extends StatelessWidget {
 
       routes: {
         '/welcome':(context) => WelcomeScreen(),
+        '/sign-up':(context) => SignUpScreen(),
         // '/login':(context) => LoginScreen(),
-        // '/join':(context) => JoinScreen(),
         // '/home': (context) => HomeScreen(),
         // '/createProfile' :(context) => CreateProfileScreen(),
         // '/searchDetails' : (context) => SearchDetailsScreen(),
