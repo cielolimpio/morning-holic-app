@@ -41,7 +41,9 @@ class _WelcomeButtons extends StatelessWidget {
           fontWeight: FontWeight.w600,
           buttonWidth: 340.0,
           buttonHeight: 55.0,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, '/sign-up');
+          },
         ),
         TextButton(
           onPressed: () {},

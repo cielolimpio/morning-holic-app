@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/screens/nickname.dart';
 import 'package:morning_holic_app/screens/register.dart';
 import 'package:morning_holic_app/screens/sign_up.dart';
 import 'package:morning_holic_app/screens/welcome.dart';
@@ -18,11 +19,12 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: BACKGROUND_COLOR,
         fontFamily: 'AppleSDGothicNeo',
       ),
-      initialRoute: '/sign-up',
+      initialRoute: '/welcome',
 
       routes: {
         '/welcome':(context) => WelcomeScreen(),
         '/sign-up':(context) => SignUpScreen(),
+        '/nickname-setting':(context) => NicknameSettingScreen(),
         '/register':(context) => RegisterScreen(),
         // '/login':(context) => LoginScreen(),
         // '/home': (context) => HomeScreen(),

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:morning_holic_app/constants/color.dart';
 
 class CustomAppBar extends PreferredSize {
+  final BuildContext context;
   CustomAppBar({
+    required this.context,
     super.key,
   }) : super(
       preferredSize: Size.fromHeight(60.0),
@@ -12,7 +14,9 @@ class CustomAppBar extends PreferredSize {
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios_new),
           color: Colors.black,
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pop(context);
+          },
         ),
       )
   );

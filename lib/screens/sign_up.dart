@@ -20,7 +20,7 @@ class SignUpScreen extends StatelessWidget {
     TextEditingController passwordCheckController = TextEditingController();
 
     return Scaffold(
-      appBar: CustomAppBar(),
+      appBar: CustomAppBar(context: context),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
@@ -70,7 +70,15 @@ class SignUpScreen extends StatelessWidget {
                 CustomElevatedButton(
                   text: '다음',
                   onPressed: () {
-                    print(nameController.text);
+                    bool isValid = validateForms(
+                      nameController.text,
+                      phoneNumberController.text,
+                      passwordController.text,
+                      passwordCheckController.text,
+                    );
+                    if (isValid) {
+                      Navigator.pushNamed(context, '/nickname-setting');
+                    }
                   },
                 )
               ],
@@ -80,6 +88,16 @@ class SignUpScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+bool validateForms(String name, String phoneNumber, String password,
+    String passwordCheck) {
+  if (name.isEmpty || phoneNumber.isEmpty ||
+      password.isEmpty || passwordCheck.isEmpty) return false;
+
+  if (password != passwordCheck) return false;
+
+  return true;
 }
 
 class _Agreements extends StatefulWidget {
@@ -95,7 +113,8 @@ class _AgreementsState extends State<_Agreements> {
 
   @override
   void initState() {
-    _agreements = ['서비스 이용약관 동의 (필수)', '개인정보 수집 및 이용 동의 (필수)', '마케팅 수신 동의 (선택)'];
+    _agreements =
+    ['서비스 이용약관 동의 (필수)', '개인정보 수집 및 이용 동의 (필수)', '마케팅 수신 동의 (선택)'];
     _agreementsBool = _agreements.indexed.map((e) => false).toList();
   }
 
@@ -111,11 +130,13 @@ class _AgreementsState extends State<_Agreements> {
               onPressed: () {
                 if (_agreementsBool.any((element) => element == false)) {
                   setState(() {
-                    _agreementsBool.replaceRange(0, _agreementsBool.length, _agreementsBool.map((e) => true).toList());
+                    _agreementsBool.replaceRange(0, _agreementsBool.length,
+                        _agreementsBool.map((e) => true).toList());
                   });
                 } else {
                   setState(() {
-                    _agreementsBool.replaceRange(0, _agreementsBool.length, _agreementsBool.map((e) => false).toList());
+                    _agreementsBool.replaceRange(0, _agreementsBool.length,
+                        _agreementsBool.map((e) => false).toList());
                   });
                 }
               },
@@ -141,18 +162,19 @@ class _AgreementsState extends State<_Agreements> {
         Column(
           children:
           _agreements
-                  .asMap()
-                  .entries
-                  .map((e) => _Agreement(
-                        text: e.value,
-                        isSelected: _agreementsBool[e.key],
-                        checkCircleOnPressed: () {
-                          setState(() {
-                            _agreementsBool[e.key] = !_agreementsBool[e.key];
-                          });
-                        },
-                      ))
-                  .toList(),
+              .asMap()
+              .entries
+              .map((e) =>
+              _Agreement(
+                text: e.value,
+                isSelected: _agreementsBool[e.key],
+                checkCircleOnPressed: () {
+                  setState(() {
+                    _agreementsBool[e.key] = !_agreementsBool[e.key];
+                  });
+                },
+              ))
+              .toList(),
         ),
         SizedBox.fromSize(size: const Size(0, 30)),
       ],
