@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:morning_holic_app/constants/color.dart';
 
-class CustomTextFormField extends StatefulWidget {
+class CustomPasswordTextFormField extends StatefulWidget {
   final TextEditingController textController;
 
   final String? placeHolder;
@@ -11,21 +11,27 @@ class CustomTextFormField extends StatefulWidget {
   List<TextInputFormatter>? textInputFormatters;
   int maxLength;
 
-  CustomTextFormField({
+  CustomPasswordTextFormField({
     required this.placeHolder,
     required this.textController,
     this.width = 320.0,
     this.height = 30.0,
     this.textInputFormatters,
-    this.maxLength = 10,
+    this.maxLength = 20,
     super.key,
   });
 
   @override
-  State<CustomTextFormField> createState() => _CustomTextFormFieldState();
+  State<CustomPasswordTextFormField> createState() => _CustomPasswordTextFormFieldState();
 }
 
-class _CustomTextFormFieldState extends State<CustomTextFormField> {
+class _CustomPasswordTextFormFieldState extends State<CustomPasswordTextFormField> {
+  bool _passwordVisible = false;
+
+  @override
+  void initState() {
+    _passwordVisible = false;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +40,7 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       inputFormatters: widget.textInputFormatters,
       maxLength: widget.maxLength,
       cursorColor: GREY_COLOR,
+      obscureText: !_passwordVisible,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(
           vertical: 0,
@@ -42,11 +49,17 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
         labelText: widget.placeHolder,
         labelStyle: const TextStyle(color: GREY_COLOR),
         suffixIcon: IconButton(
-          icon: const Icon(Icons.highlight_remove_rounded),
+          icon: Icon(
+            _passwordVisible
+            ? Icons.visibility_off
+            : Icons.visibility
+          ),
           iconSize: 20.0,
           color: GREY_COLOR,
           onPressed: () {
-            widget.textController.clear();
+            setState(() {
+              _passwordVisible = !_passwordVisible;
+            });
           },
         ),
         enabledBorder: OutlineInputBorder(
