@@ -6,18 +6,53 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(30.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            _morningHolicLogo,
+            _WelcomeButtons(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+Widget _morningHolicLogo = Image.asset(
+  'assets/img/MorningHolicLogo.png',
+  width: 236.4,
+  height: 158,
+);
+
+class _WelcomeButtons extends StatelessWidget {
+  const _WelcomeButtons({super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       children: [
-        Image.asset(
-          'assets/img/MorningHolicLogo.png',
-          width: 236.4,
-          height: 158,
-        ),
         CustomElevatedButton(
           text: '회원가입',
+          fontSize: 18.0,
+          fontWeight: FontWeight.w600,
           buttonWidth: 340.0,
           buttonHeight: 55.0,
           onPressed: () {},
+        ),
+        TextButton(
+          onPressed: () {},
+          child: Text(
+            '이미 가입된 계정이 있다면?',
+            style: TextStyle(
+                color: Colors.black,
+                decoration: TextDecoration.underline,
+                fontSize: 16.0
+            ),
+          ),
         )
       ],
     );

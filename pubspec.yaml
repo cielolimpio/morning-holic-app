@@ -66,15 +66,14 @@ flutter:
     - assets/img/
 
   fonts:
-    - family: AppleSDGothicNeoRegular
+    - family: AppleSDGothicNeo
       fonts:
         - asset: assets/font/AppleSDGothicNeoR.ttf
-    - family: AppleSDGothicNeoSemiBold
-      fonts:
+          weight: 500
         - asset: assets/font/AppleSDGothicNeoSB.ttf
-    - family: AppleSDGothicNeoBold
-      fonts:
+          weight: 600
         - asset: assets/font/AppleSDGothicNeoB.ttf
+          weight: 700
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

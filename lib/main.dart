@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morning_holic_app/constants/color.dart';
 import 'package:morning_holic_app/screens/welcome.dart';
 
 void main() {
@@ -11,6 +12,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(
+        scaffoldBackgroundColor: BACKGROUND_COLOR,
+        fontFamily: 'AppleSDGothicNeo',
+      ),
       initialRoute: '/welcome',
 
       routes: {
