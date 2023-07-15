@@ -7,6 +7,7 @@ import '../constants/color.dart';
 class CustomDropdown extends StatefulWidget {
   final List<String> options;
   final String hint;
+  final double width;
   final double height;
   final double fontSize;
 
@@ -14,6 +15,7 @@ class CustomDropdown extends StatefulWidget {
     Key? key,
     required this.options,
     this.hint = 'initial',
+    this.width = 100.0,
     this.height = 50.0,
     this.fontSize = 20.0,
   }) : super(key: key);
@@ -23,6 +25,13 @@ class CustomDropdown extends StatefulWidget {
 }
 
 class _CustomDropdownState extends State<CustomDropdown> {
+  double width = 0;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    width = widget.width;
+  }
   String? _selectedValue;
   bool _showMenu = false;
 
@@ -99,6 +108,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
 
   ButtonStyleData _getButtonStyleData() {
     return ButtonStyleData(
+      width: 100,
       height: 50,
       padding: _selectedValue == null
           ? const EdgeInsets.only(left: 14, right: 14)
