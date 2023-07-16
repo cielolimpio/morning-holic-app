@@ -10,18 +10,20 @@ class CustomElevatedButton extends StatelessWidget {
   double buttonHeight;
   double fontSize;
   FontWeight fontWeight;
+  bool isDisabled;
 
-  CustomElevatedButton({
-    required this.text,
-    required this.onPressed,
-    this.buttonColor = PRIMARY_COLOR,
-    this.textColor = Colors.white,
-    this.buttonWidth = 320.0,
-    this.buttonHeight = 44.0,
-    this.fontSize = 14.0,
-    this.fontWeight = FontWeight.w500,
-    Key? key
-  }) : super(key: key);
+  CustomElevatedButton(
+      {required this.text,
+      required this.onPressed,
+      this.buttonColor = PRIMARY_COLOR,
+      this.textColor = Colors.white,
+      this.buttonWidth = 320.0,
+      this.buttonHeight = 44.0,
+      this.fontSize = 14.0,
+      this.fontWeight = FontWeight.w500,
+      this.isDisabled = false,
+      Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -33,9 +35,10 @@ class CustomElevatedButton extends StatelessWidget {
             fixedSize: Size(buttonWidth, buttonHeight),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
-            )
+            ),
+          elevation: 0,
         ),
-        onPressed: onPressed,
+        onPressed: isDisabled ? null : onPressed,
         child: Text(
           text,
           style: TextStyle(

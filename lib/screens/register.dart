@@ -19,6 +19,7 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
+    TextEditingController bankAccountController = TextEditingController();
 
     return Scaffold(
       body: Padding(
@@ -28,7 +29,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomAppBar(),
+              CustomAppBar(context: context),
               const CustomTitle(
                   title: "8월 모닝홀릭 신청",
                   description: "8월 모닝홀릭이 시작되기 전에는 아래 정보들을 언제지 변경할 수 있습니다."
@@ -62,7 +63,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 10,),
               const CustomDropdown(options: ['국민', '우리', '기업', '카카오뱅크', '신한', '농협'], hint: '은행',),
               const SizedBox(height: 10,),
-              CustomTextFormField(placeHolder: '계좌 번호'),
+              CustomTextFormField(
+                  textController: bankAccountController,
+                  placeHolder: '계좌 번호'
+              ),
               const SizedBox(height: 30,),
 
 

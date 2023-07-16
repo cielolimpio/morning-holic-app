@@ -32,6 +32,10 @@ dependencies:
     sdk: flutter
   dropdown_button2: ^2.3.4
   info_popup: ^3.0.0
+  dio: ^5.2.1+1
+  flutter_secure_storage: ^8.0.0
+  json_annotation: ^4.8.1
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -40,6 +44,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner: ^2.4.6
+  json_serializable: ^6.7.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

@@ -2,15 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:morning_holic_app/components/app_bar.dart';
 import 'package:morning_holic_app/components/text_form_field.dart';
 import 'package:morning_holic_app/components/title.dart';
-
+import 'package:morning_holic_app/dtos/sign_up_model.dart';
+import 'package:morning_holic_app/payloads/request/sign_up_request.dart';
+import 'package:morning_holic_app/repositories/auth_repository.dart';
 import '../components/elevated_button.dart';
+import '../payloads/response/jwt_token_response.dart';
 
 class NicknameSettingScreen extends StatelessWidget {
   const NicknameSettingScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    AuthRepository authRepository = AuthRepository();
+
     TextEditingController nicknameController = TextEditingController();
+
+    final signUpRequest = ModalRoute
+        .of(context)!
+        .settings
+        .arguments as SignUpModel;
 
     return Scaffold(
       appBar: CustomAppBar(context: context),
@@ -33,7 +43,16 @@ class NicknameSettingScreen extends StatelessWidget {
             SizedBox.fromSize(size: const Size(0, 30)),
             CustomElevatedButton(
               text: '다음',
-              onPressed: () {},
+              onPressed: () {
+                SignUpRequest request = SignUpRequest(
+                  name: signUpRequest.name,
+                  phoneNumber: signUpRequest.phoneNumber,
+                  password: signUpRequest.password,
+                  nickname: nicknameController.text,
+                );
+
+                final response = authRepository.signUp(request);
+              },
             )
           ],
         ),

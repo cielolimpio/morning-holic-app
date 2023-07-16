@@ -8,17 +8,32 @@ import 'package:morning_holic_app/constants/color.dart';
 
 import '../components/password_text_form_field.dart';
 import '../components/phone_num_dash_formatter.dart';
+import '../dtos/sign_up_model.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    TextEditingController nameController = TextEditingController();
-    TextEditingController phoneNumberController = TextEditingController();
-    TextEditingController passwordController = TextEditingController();
-    TextEditingController passwordCheckController = TextEditingController();
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
 
+class _SignUpScreenState extends State<SignUpScreen> {
+  List<String> _agreements = [];
+  List<bool> _agreementsBool = [];
+
+  TextEditingController nameController = TextEditingController();
+  TextEditingController phoneNumberController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController passwordCheckController = TextEditingController();
+
+  @override
+  void initState() {
+    _agreements = ['서비스 이용약관 동의 (필수)', '개인정보 수집 및 이용 동의 (필수)'];
+    _agreementsBool = _agreements.indexed.map((e) => false).toList();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(context: context),
       body: Padding(
@@ -55,20 +70,46 @@ class SignUpScreen extends StatelessWidget {
               textController: passwordController,
               placeHolder: '비밀번호',
               maxLength: 20,
+              validator: (value) {
+                if (value != null && value.isNotEmpty) {
+                  if (value.length < 8 ||
+                      !numberRegex.hasMatch(value) ||
+                      !alphabetRegex.hasMatch(value)) {
+                    return '비밀번호는 8자리 이상이어야 하며 영문과 숫자를 반드시 포함해야 합니다.';
+                  }
+                }
+                return null;
+              },
             ),
             SizedBox.fromSize(size: const Size(0, 30)),
             CustomPasswordTextFormField(
               textController: passwordCheckController,
               placeHolder: '비밀번호 확인',
               maxLength: 20,
+              validator: (value) {
+                if (value != null && value.isNotEmpty) {
+                  if (value.length < 8 ||
+                      !numberRegex.hasMatch(value) ||
+                      !alphabetRegex.hasMatch(value)) {
+                    return '비밀번호는 8자리 이상이어야 하며 영문과 숫자를 반드시 포함해야 합니다.';
+                  }
+                }
+                return null;
+              },
             ),
             SizedBox.fromSize(size: const Size(0, 50)),
             Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _Agreements(),
+                _Agreements(
+                  agreements: _agreements,
+                  agreementsBool: _agreementsBool,
+                  allAgreeOnPressed: allAgreeOnPressed,
+                  agreementOnPressed: agreementOnPressed,
+                ),
                 CustomElevatedButton(
                   text: '다음',
+                  isDisabled: checkIfButtonDisabled(),
                   onPressed: () {
                     bool isValid = validateForms(
                       nameController.text,
@@ -77,7 +118,14 @@ class SignUpScreen extends StatelessWidget {
                       passwordCheckController.text,
                     );
                     if (isValid) {
-                      Navigator.pushNamed(context, '/nickname-setting');
+                      Navigator.pushNamed(context, '/nickname-setting',
+                          arguments: SignUpModel(
+                            name: nameController.text,
+                            phoneNumber: phoneNumberController.text,
+                            password: passwordController.text,
+                          ));
+                    } else {
+                      print("hi");
                     }
                   },
                 )
@@ -88,36 +136,71 @@ class SignUpScreen extends StatelessWidget {
       ),
     );
   }
+
+  bool checkIfButtonDisabled() {
+    if (_agreementsBool.any((element) => element == false)) {
+      return true;
+    }
+    return false;
+  }
+
+  void allAgreeOnPressed() {
+    if (_agreementsBool.any((element) => element == false)) {
+      setState(() {
+        _agreementsBool.replaceRange(0, _agreementsBool.length,
+            _agreementsBool.map((e) => true).toList());
+      });
+    } else {
+      setState(() {
+        _agreementsBool.replaceRange(0, _agreementsBool.length,
+            _agreementsBool.map((e) => false).toList());
+      });
+    }
+  }
+
+  void agreementOnPressed(int index) {
+    setState(() {
+      _agreementsBool[index] = !_agreementsBool[index];
+    });
+  }
 }
 
-bool validateForms(String name, String phoneNumber, String password,
-    String passwordCheck) {
-  if (name.isEmpty || phoneNumber.isEmpty ||
-      password.isEmpty || passwordCheck.isEmpty) return false;
+final numberRegex = RegExp(r'[0-9-]');
+final alphabetRegex = RegExp(r'[a-zA-Z]');
 
+bool validateForms(
+    String name, String phoneNumber, String password, String passwordCheck) {
+  if (name.isEmpty ||
+      phoneNumber.isEmpty ||
+      password.isEmpty ||
+      passwordCheck.isEmpty) return false;
+
+  if (phoneNumber.length != 13) return false;
+  if (!phoneNumber.startsWith('010-')) return false;
   if (password != passwordCheck) return false;
 
   return true;
 }
 
 class _Agreements extends StatefulWidget {
-  const _Agreements({super.key});
+  final List<String> agreements;
+  final List<bool> agreementsBool;
+  final VoidCallback allAgreeOnPressed;
+  final Function(int index) agreementOnPressed;
+
+  const _Agreements({
+    required this.agreements,
+    required this.agreementsBool,
+    required this.allAgreeOnPressed,
+    required this.agreementOnPressed,
+    super.key,
+  });
 
   @override
   State<_Agreements> createState() => _AgreementsState();
 }
 
 class _AgreementsState extends State<_Agreements> {
-  List<String> _agreements = [];
-  List<bool> _agreementsBool = [];
-
-  @override
-  void initState() {
-    _agreements =
-    ['서비스 이용약관 동의 (필수)', '개인정보 수집 및 이용 동의 (필수)', '마케팅 수신 동의 (선택)'];
-    _agreementsBool = _agreements.indexed.map((e) => false).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -127,21 +210,9 @@ class _AgreementsState extends State<_Agreements> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             IconButton(
-              onPressed: () {
-                if (_agreementsBool.any((element) => element == false)) {
-                  setState(() {
-                    _agreementsBool.replaceRange(0, _agreementsBool.length,
-                        _agreementsBool.map((e) => true).toList());
-                  });
-                } else {
-                  setState(() {
-                    _agreementsBool.replaceRange(0, _agreementsBool.length,
-                        _agreementsBool.map((e) => false).toList());
-                  });
-                }
-              },
+              onPressed: widget.allAgreeOnPressed,
               icon: const Icon(Icons.check_circle),
-              color: _agreementsBool.any((element) => element == false)
+              color: widget.agreementsBool.any((element) => element == false)
                   ? GREY_COLOR
                   : PRIMARY_COLOR,
               iconSize: 30.0,
@@ -160,20 +231,16 @@ class _AgreementsState extends State<_Agreements> {
           thickness: 0.3,
         ),
         Column(
-          children:
-          _agreements
+          children: widget.agreements
               .asMap()
               .entries
-              .map((e) =>
-              _Agreement(
-                text: e.value,
-                isSelected: _agreementsBool[e.key],
-                checkCircleOnPressed: () {
-                  setState(() {
-                    _agreementsBool[e.key] = !_agreementsBool[e.key];
-                  });
-                },
-              ))
+              .map((e) => _Agreement(
+                    text: e.value,
+                    isSelected: widget.agreementsBool[e.key],
+                    checkCircleOnPressed: () {
+                      widget.agreementOnPressed(e.key);
+                    },
+                  ))
               .toList(),
         ),
         SizedBox.fromSize(size: const Size(0, 30)),
@@ -182,7 +249,7 @@ class _AgreementsState extends State<_Agreements> {
   }
 }
 
-class _Agreement extends StatefulWidget {
+class _Agreement extends StatelessWidget {
   final String text;
   final bool isSelected;
   final Function() checkCircleOnPressed;
@@ -195,11 +262,6 @@ class _Agreement extends StatefulWidget {
   });
 
   @override
-  State<_Agreement> createState() => _AgreementState();
-}
-
-class _AgreementState extends State<_Agreement> {
-  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -208,13 +270,13 @@ class _AgreementState extends State<_Agreement> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             IconButton(
-              onPressed: widget.checkCircleOnPressed,
+              onPressed: checkCircleOnPressed,
               icon: const Icon(Icons.check_circle),
-              color: widget.isSelected ? PRIMARY_COLOR : GREY_COLOR,
+              color: isSelected ? PRIMARY_COLOR : GREY_COLOR,
               iconSize: 30.0,
             ),
             Text(
-              widget.text,
+              text,
               style: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
