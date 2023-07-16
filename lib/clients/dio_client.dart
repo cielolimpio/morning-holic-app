@@ -1,0 +1,82 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+
+class DioClient {
+  late Dio _dio;
+  late Dio _dioWithoutAccessToken;
+  final _storage = const FlutterSecureStorage();
+
+  static final DioClient _instance = DioClient._internal();
+
+  factory DioClient() => _instance;
+
+  Dio get dio => _dio;
+  Dio get dioWithoutAccessToken => _dioWithoutAccessToken;
+
+  var options = BaseOptions(
+    baseUrl: 'http://localhost:9000/api'
+  );
+
+  DioClient._internal() {
+    _dioWithoutAccessToken = Dio(options);
+
+    _dio = Dio(options);
+    _dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (RequestOptions options, RequestInterceptorHandler handler) async {
+        String accessToken = await _getAccessToken();
+        options.headers["Authorization"] = "Bearer $accessToken";
+        return handler.next(options);
+      },
+      onError: (error, handler) async {
+        if (error.response?.statusCode == 401) {
+          final isSuccess = await refreshAccessToken();
+          if (isSuccess) {
+            return handler.resolve(
+              await _dio.request(
+                error.requestOptions.path,
+                data: error.requestOptions.data,
+                queryParameters: error.requestOptions.queryParameters,
+                options: _getOptionsFromRequestOptions(error.requestOptions),
+              ),
+            );
+          }
+          return handler.reject(
+            DioException(
+              requestOptions: error.requestOptions,
+              response: Response(
+                statusCode: 400,
+                requestOptions: error.requestOptions,
+              ),
+              message: 'Fail To Refresh Access Token',
+            ),
+          );
+        }
+        return handler.next(error);
+      }
+    ));
+  }
+
+  Future<String> _getAccessToken() async {
+    return await _storage.read(key: 'accessToken') ?? '';
+  }
+
+  Future<bool> refreshAccessToken() async {
+    final response = await _dio.post('api/refresh');
+
+    if (response.statusCode == 200) {
+      await _storage.write(key: 'accessToken', value: response.data['accessToken']);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Options _getOptionsFromRequestOptions(RequestOptions requestOptions) {
+    return Options(
+      method: requestOptions.method,
+      headers: requestOptions.headers,
+      contentType: requestOptions.contentType,
+      responseType: requestOptions.responseType,
+    );
+  }
+}

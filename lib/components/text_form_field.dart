@@ -6,6 +6,8 @@ class CustomTextFormField extends StatefulWidget {
   final TextEditingController textController;
 
   final String? placeHolder;
+  String? Function(String?)? validator;
+
   double width;
   double height;
   List<TextInputFormatter>? textInputFormatters;
@@ -14,6 +16,7 @@ class CustomTextFormField extends StatefulWidget {
   CustomTextFormField({
     required this.textController,
     required this.placeHolder,
+    this.validator,
     this.width = 320.0,
     this.height = 30.0,
     this.textInputFormatters,
@@ -34,6 +37,8 @@ class _CustomTextFormFieldState extends State<CustomTextFormField> {
       inputFormatters: widget.textInputFormatters,
       maxLength: widget.maxLength,
       cursorColor: GREY_COLOR,
+      autovalidateMode: AutovalidateMode.always,
+      validator: widget.validator,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(
           vertical: 0,

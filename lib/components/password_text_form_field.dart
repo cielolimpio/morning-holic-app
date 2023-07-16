@@ -6,6 +6,8 @@ class CustomPasswordTextFormField extends StatefulWidget {
   final TextEditingController textController;
 
   final String? placeHolder;
+  String? Function(String?)? validator;
+
   double width;
   double height;
   List<TextInputFormatter>? textInputFormatters;
@@ -14,6 +16,7 @@ class CustomPasswordTextFormField extends StatefulWidget {
   CustomPasswordTextFormField({
     required this.placeHolder,
     required this.textController,
+    this.validator,
     this.width = 320.0,
     this.height = 30.0,
     this.textInputFormatters,
@@ -40,6 +43,8 @@ class _CustomPasswordTextFormFieldState extends State<CustomPasswordTextFormFiel
       inputFormatters: widget.textInputFormatters,
       maxLength: widget.maxLength,
       cursorColor: GREY_COLOR,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      validator: widget.validator,
       obscureText: !_passwordVisible,
       decoration: InputDecoration(
         contentPadding: const EdgeInsets.symmetric(
@@ -73,6 +78,20 @@ class _CustomPasswordTextFormFieldState extends State<CustomPasswordTextFormFiel
           borderSide: const BorderSide(
             width: 0.2,
             color: GREY_COLOR,
+          ),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        errorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            width: 0.4,
+            color: Colors.red,
+          ),
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderSide: const BorderSide(
+            width: 0.4,
+            color: Colors.red,
           ),
           borderRadius: BorderRadius.circular(10.0),
         ),
