@@ -30,10 +30,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  dropdown_button2: ^2.3.4
+  dropdown_button2: ^2.1.4
   info_popup: ^3.0.0
   dio: ^5.2.1+1
   flutter_secure_storage: ^8.0.0
+  shared_preferences: ^2.2.0
   json_annotation: ^4.8.1
 
 
