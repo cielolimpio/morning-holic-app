@@ -6,16 +6,23 @@ import 'package:morning_holic_app/dtos/sign_up_model.dart';
 import 'package:morning_holic_app/payloads/request/sign_up_request.dart';
 import 'package:morning_holic_app/repositories/auth_repository.dart';
 import '../components/elevated_button.dart';
-import '../payloads/response/jwt_token_response.dart';
 
-class NicknameSettingScreen extends StatelessWidget {
+class NicknameSettingScreen extends StatefulWidget {
   const NicknameSettingScreen({super.key});
+
+  @override
+  State<NicknameSettingScreen> createState() => _NicknameSettingScreenState();
+}
+
+class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
+  bool isValidatorOn = false;
+  bool isNicknameDuplicated = false;
+
+  TextEditingController nicknameController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     AuthRepository authRepository = AuthRepository();
-
-    TextEditingController nicknameController = TextEditingController();
 
     final signUpRequest = ModalRoute
         .of(context)!
@@ -39,11 +46,23 @@ class NicknameSettingScreen extends StatelessWidget {
               textController: nicknameController,
               placeHolder: '닉네임',
               maxLength: 20,
+              validator: (value) {
+                if (isNicknameDuplicated) {
+                  return '이미 존재하는 닉네임입니다.';
+                } else {
+                  return null;
+                }
+              },
+              isValidatorOn: isValidatorOn,
             ),
             SizedBox.fromSize(size: const Size(0, 30)),
             CustomElevatedButton(
               text: '다음',
-              onPressed: () {
+              onPressed: () async {
+                setState(() {
+                  isValidatorOn = false;
+                  isNicknameDuplicated = false;
+                });
                 SignUpRequest request = SignUpRequest(
                   name: signUpRequest.name,
                   phoneNumber: signUpRequest.phoneNumber,
@@ -51,7 +70,13 @@ class NicknameSettingScreen extends StatelessWidget {
                   nickname: nicknameController.text,
                 );
 
-                final response = authRepository.signUp(request);
+                final response = await authRepository.signUp(request);
+                if (response is String) {
+                  setState(() {
+                    isValidatorOn = true;
+                    isNicknameDuplicated = true;
+                  });
+                }
               },
             )
           ],

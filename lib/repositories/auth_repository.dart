@@ -11,11 +11,29 @@ class AuthRepository {
     _dioClient = DioClient();
   }
 
-  Future<JwtTokenResponse> signUp(SignUpRequest request) async {
+  Future<bool> validateSignUp(String phoneNumber) async {
+    try {
+      final response = await _dioClient.dioWithoutAccessToken.get(
+          '/auth/sign-up/validate',
+          queryParameters: {
+            'phoneNumber': phoneNumber,
+          }
+      );
+      return response.data as bool;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  signUp(SignUpRequest request) async {
     try {
       final response = await _dioClient.dioWithoutAccessToken.post('/auth/sign-up', data: request.toJson());
-      return JwtTokenResponse.fromJson(response.data);
-    } catch (e) {
+      final jwtToken = JwtTokenResponse.fromJson(response.data);
+      _dioClient.setUserInfo(jwtToken);
+    } on DioException catch (e) {
+      if (e.response?.data?['code'] == 1003) {
+        return e.response!.data['message'];
+      }
       throw e;
     }
   }

@@ -5,6 +5,7 @@ import 'package:morning_holic_app/components/elevated_button.dart';
 import 'package:morning_holic_app/components/text_form_field.dart';
 import 'package:morning_holic_app/components/title.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/repositories/auth_repository.dart';
 
 import '../components/password_text_form_field.dart';
 import '../components/phone_num_dash_formatter.dart';
@@ -26,6 +27,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   TextEditingController passwordController = TextEditingController();
   TextEditingController passwordCheckController = TextEditingController();
 
+  bool isValidatorOn = false;
+  bool isPhoneNumberDuplicated = false;
+  String duplicatedPhoneNumber = '';
+
   @override
   void initState() {
     _agreements = ['서비스 이용약관 동의 (필수)', '개인정보 수집 및 이용 동의 (필수)'];
@@ -34,6 +39,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AuthRepository authRepository = AuthRepository();
+
     return Scaffold(
       appBar: CustomAppBar(context: context),
       body: Padding(
@@ -54,6 +61,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
               textInputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]')),
               ],
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return '이름을 입력해주세요.';
+                }
+                return null;
+              },
+              isValidatorOn: isValidatorOn,
             ),
             SizedBox.fromSize(size: const Size(0, 30)),
             CustomTextFormField(
@@ -64,6 +78,21 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
                 PhoneNumDashFormatter(),
               ],
+              validator: (value) {
+                if (isPhoneNumberDuplicated) {
+                  if (value == duplicatedPhoneNumber) {
+                    return '이미 가입된 전화번호가 있습니다.';
+                  }
+                } else if (value != null && value.isNotEmpty) {
+                  if (value.length != 13 || !value.startsWith('010-')) {
+                    return '전화번호가 올바르지 않습니다.';
+                  }
+                } else {
+                  return '전화번호를 입력해주세요.';
+                }
+                return null;
+              },
+              isValidatorOn: isValidatorOn,
             ),
             SizedBox.fromSize(size: const Size(0, 30)),
             CustomPasswordTextFormField(
@@ -110,22 +139,42 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 CustomElevatedButton(
                   text: '다음',
                   isDisabled: checkIfButtonDisabled(),
-                  onPressed: () {
-                    bool isValid = validateForms(
+                  onPressed: () async {
+                    setState(() {
+                      isValidatorOn = false;
+                      isPhoneNumberDuplicated = false;
+                    });
+
+                    bool isFormValid = validateForms(
                       nameController.text,
                       phoneNumberController.text,
                       passwordController.text,
                       passwordCheckController.text,
                     );
-                    if (isValid) {
-                      Navigator.pushNamed(context, '/nickname-setting',
-                          arguments: SignUpModel(
-                            name: nameController.text,
-                            phoneNumber: phoneNumberController.text,
-                            password: passwordController.text,
-                          ));
+                    if (!isFormValid) {
+                      setState(() {
+                        isValidatorOn = true;
+                      });
                     } else {
-                      print("hi");
+                      bool isPhoneNumberValid = await authRepository.validateSignUp(phoneNumberController.text);
+                      print(isPhoneNumberValid);
+                      if (isPhoneNumberValid) {
+                        Navigator.pushNamed(
+                            context,
+                            '/nickname-setting',
+                            arguments: SignUpModel(
+                              name: nameController.text,
+                              phoneNumber: phoneNumberController.text,
+                              password: passwordController.text,
+                            ),
+                        );
+                      } else {
+                        setState(() {
+                          isValidatorOn = true;
+                          isPhoneNumberDuplicated = true;
+                          duplicatedPhoneNumber = phoneNumberController.text;
+                        });
+                      }
                     }
                   },
                 )
