@@ -1,12 +1,20 @@
+
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/provider/register_state.dart';
 import 'package:morning_holic_app/screens/nickname.dart';
 import 'package:morning_holic_app/screens/register.dart';
 import 'package:morning_holic_app/screens/sign_up.dart';
 import 'package:morning_holic_app/screens/welcome.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+      ChangeNotifierProvider(
+          create: (context) => RegisterState(),
+        child: MyApp(),
+      )
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -19,7 +27,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: BACKGROUND_COLOR,
         fontFamily: 'AppleSDGothicNeo',
       ),
-      initialRoute: '/welcome',
+      initialRoute: '/register',
 
       routes: {
         '/welcome':(context) => WelcomeScreen(),

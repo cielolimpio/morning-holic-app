@@ -33,7 +33,8 @@ class DioClient {
         return handler.next(options);
       },
       onError: (error, handler) async {
-        if (error.response?.data.code == 1) {
+        if(error.response?.data is Map && error.response?.data['code'] == 1){
+        // if (error.response?.data.code == 1) {
           final isSuccess = await refreshAccessToken();
           if (isSuccess) {
             return handler.resolve(

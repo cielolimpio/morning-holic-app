@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:info_popup/info_popup.dart';
@@ -7,6 +9,10 @@ import 'package:morning_holic_app/components/elevated_button.dart';
 import 'package:morning_holic_app/components/radio_button.dart';
 import 'package:morning_holic_app/components/text_form_field.dart';
 import 'package:morning_holic_app/components/title.dart';
+import 'package:morning_holic_app/payloads/request/register_request.dart';
+import 'package:morning_holic_app/provider/register_state.dart';
+import 'package:morning_holic_app/repositories/user_repository.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -17,8 +23,10 @@ class RegisterScreen extends StatefulWidget {
 
 
 class _RegisterScreenState extends State<RegisterScreen> {
+
   @override
   Widget build(BuildContext context) {
+    UserRepository userRepository = UserRepository();
     TextEditingController bankAccountController = TextEditingController();
 
     return Scaffold(
@@ -35,10 +43,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   description: "8월 모닝홀릭이 시작되기 전에는 아래 정보들을 언제지 변경할 수 있습니다."
               ),
               const SizedBox(height: 30,),
-              const CustomDropdown(
-                options: ['4시', '4시 30분', '5시', '5시 30분', '6시', '6시 30분', '7시', '7시 30분', '8시'],
-                hint: '목표 기상시간'
+
+              Consumer<RegisterState>(
+                builder: (context, registerState, _){
+                  return CustomDropdown(
+                      options: const ['4시', '4시 30분', '5시', '5시 30분', '6시', '6시 30분', '7시', '7시 30분', '8시'],
+                      hint: '목표 기상시간',
+                      selectedValue: registerState.targetWakeupTime,
+                      onChanged: (newValue){
+                        registerState.updateWakeupTime(newValue!);
+                      });
+                }
               ),
+
               const SizedBox(height: 30,),
               const Row(
                 mainAxisAlignment: MainAxisAlignment.start,
@@ -55,13 +72,34 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   ),
                 ],
               ),
-              const CustomRadioButton(
-                  options: ['마일드 모드', '챌린지 모드'],
+
+              Consumer<RegisterState>(
+                builder: (context, registerState, _){
+                  return CustomRadioButton(
+                    options: const ['마일드 모드', '챌린지 모드'],
+                    currentValue: registerState.mode,
+                    onChanged: (newValue){
+                      registerState.updateMode(newValue!);
+                    },
+                  );
+                }
               ),
               const SizedBox(height: 30,),
               const Text('환급 받을 계좌', style: TextStyle(fontSize: 16.0),),
               const SizedBox(height: 10,),
-              const CustomDropdown(options: ['국민', '우리', '기업', '카카오뱅크', '신한', '농협'], hint: '은행',),
+
+              Consumer<RegisterState>(
+                builder: (context, registerState, _){
+                  return CustomDropdown(
+                    options: const ['국민', '우리', '기업', '카카오뱅크', '신한', '농협'],
+                    hint: '은행',
+                    selectedValue: registerState.refundBankName,
+                    onChanged: (newValue){
+                      registerState.refundBankName = newValue;
+                    },
+                  );
+                },
+              ),
               const SizedBox(height: 10,),
               CustomTextFormField(
                   textController: bankAccountController,
@@ -85,8 +123,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 8,),
               const Text('보증금을 입금해주시면 입금 확인 후 승인됩니다. 입금이 안 된 경우 신청이 반려될 수 있습니다.', style: TextStyle(fontSize: 15),),
               const SizedBox(height: 30,),
-              CustomElevatedButton(text: '신청 완료', onPressed: (){
+              CustomElevatedButton(text: '신청 완료', onPressed: () async{
                 // TODO
+                String? refundBankName;
+                String? mode;
+                String? targetWakeupTime;
+
+                RegisterState registerState = context.read<RegisterState>();
+                refundBankName = registerState.refundBankName;
+                mode = registerState.mode;
+                targetWakeupTime = registerState.targetWakeupTime;
+
+                RegisterRequest registerRequest = RegisterRequest(
+                    refundBankName: registerState.refundBankName!,
+                    refundAccount: bankAccountController.text,
+                    mode: registerState.mode!,
+                    targetWakeUpTime: registerState.targetWakeupTime!
+                );
+
+                final response = await userRepository.register(registerRequest);
+                if (response is String) {
+                  print(response);
+                }
+
               }),
             ],
           ),
