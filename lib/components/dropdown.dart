@@ -5,6 +5,8 @@ import '../constants/color.dart';
 
 class CustomDropdown extends StatefulWidget {
   final List<String> options;
+  final String? selectedValue;
+  final void Function(String?) onChanged;
   final String hint;
   final double width;
   final double height;
@@ -13,6 +15,8 @@ class CustomDropdown extends StatefulWidget {
   const CustomDropdown({
     Key? key,
     required this.options,
+    required this.selectedValue,
+    required this.onChanged,
     this.hint = 'initial',
     this.width = 100.0,
     this.height = 50.0,
@@ -24,15 +28,14 @@ class CustomDropdown extends StatefulWidget {
 }
 
 class _CustomDropdownState extends State<CustomDropdown> {
-  double width = 0;
+  bool _showMenu = false;
+  String? _selectedValue;
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    width = widget.width;
+    _selectedValue = widget.selectedValue;
   }
-  String? _selectedValue;
-  bool _showMenu = false;
 
   BorderSide borderSide = const BorderSide(
     color: Colors.grey,
@@ -42,21 +45,26 @@ class _CustomDropdownState extends State<CustomDropdown> {
   @override
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
-      child: DropdownButton2(
-        isExpanded: true,
-        hint: _getHint(),
-        items: widget.options
-            .map((item) => _getDropdownMenuItem(item))
-            .toList(),
-        value: _selectedValue,
-        onChanged: (value) => _onChanged(value),
-        onMenuStateChange: (showMenu) => _onMenuStateChange(showMenu),
-        buttonStyleData: _getButtonStyleData(),
-        iconStyleData: _getIconStyleData(),
-        dropdownStyleData: _getDropdownStyleData(),
-        menuItemStyleData: _getMenuItemStyleData(),
-      ),
-    );
+          child: DropdownButton2(
+            isExpanded: true,
+            hint: _getHint(),
+            items: widget.options
+                .map((item) => _getDropdownMenuItem(item))
+                .toList(),
+            value: _selectedValue,
+            onChanged: (newValue){
+              setState(() {
+                _selectedValue = newValue;
+                widget.onChanged(newValue);
+              });
+            },
+            onMenuStateChange: (showMenu) => _onMenuStateChange(showMenu),
+            buttonStyleData: _getButtonStyleData(),
+            iconStyleData: _getIconStyleData(),
+            dropdownStyleData: _getDropdownStyleData(),
+            menuItemStyleData: _getMenuItemStyleData(),
+          ),
+        );
   }
 
   Row _getHint() {
@@ -93,11 +101,11 @@ class _CustomDropdownState extends State<CustomDropdown> {
     );
   }
 
-  void _onChanged(String? value) {
-    setState(() {
-      _selectedValue = value as String;
-    });
-  }
+  // void _onChanged(String? value) {
+  //   setState(() {
+  //     _selectedValue = value;
+  //   });
+  // }
 
   void _onMenuStateChange(bool showMenu) {
     setState(() {
@@ -109,7 +117,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
     return ButtonStyleData(
       width: 100,
       height: 50,
-      padding: _selectedValue == null
+      padding: widget.selectedValue == null
           ? const EdgeInsets.only(left: 14, right: 14)
           : null,
       decoration: BoxDecoration(

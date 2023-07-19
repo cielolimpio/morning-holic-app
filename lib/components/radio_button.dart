@@ -4,12 +4,16 @@ import '../constants/color.dart';
 
 class CustomRadioButton extends StatefulWidget {
   final List<String> options;
+  final ValueChanged<String?> onChanged;
   final double fontSize;
+  final String? currentValue;
 
   const CustomRadioButton({
     Key? key,
     required this.options,
+    required this.onChanged,
     this.fontSize = 20.0,
+    required this.currentValue,
   }) : super(key: key);
 
   @override
@@ -17,13 +21,6 @@ class CustomRadioButton extends StatefulWidget {
 }
 
 class _CustomRadioButtonState extends State<CustomRadioButton> {
-  String _current = "";
-
-  @override
-  void initState() {
-    super.initState();
-    _current = widget.options.first;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,12 +34,8 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
             activeColor: PRIMARY_COLOR,
             title: Text(option, overflow: TextOverflow.visible, maxLines: 1,),
             value: option,
-            groupValue: _current,
-            onChanged: (value) {
-              setState(() {
-                _current = value.toString();
-              });
-            },
+            groupValue: widget.currentValue,
+            onChanged: widget.onChanged,
             visualDensity: VisualDensity(horizontal: VisualDensity.minimumDensity),
             contentPadding: EdgeInsets.all(0),
           ),
