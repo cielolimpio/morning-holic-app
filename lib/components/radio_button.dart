@@ -12,7 +12,7 @@ class CustomRadioButton extends StatefulWidget {
     Key? key,
     required this.options,
     required this.onChanged,
-    this.fontSize = 20.0,
+    this.fontSize = 14.0,
     required this.currentValue,
   }) : super(key: key);
 
@@ -21,7 +21,6 @@ class CustomRadioButton extends StatefulWidget {
 }
 
 class _CustomRadioButtonState extends State<CustomRadioButton> {
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -32,11 +31,19 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
           height: 50,
           child: RadioListTile(
             activeColor: PRIMARY_COLOR,
-            title: Text(option, overflow: TextOverflow.visible, maxLines: 1,),
+            title: Text(
+              option,
+              overflow: TextOverflow.visible,
+              maxLines: 1,
+              style: TextStyle(
+                fontSize: widget.fontSize,
+              ),
+            ),
             value: option,
             groupValue: widget.currentValue,
             onChanged: widget.onChanged,
-            visualDensity: VisualDensity(horizontal: VisualDensity.minimumDensity),
+            visualDensity:
+                VisualDensity(horizontal: VisualDensity.minimumDensity),
             contentPadding: EdgeInsets.all(0),
           ),
         );

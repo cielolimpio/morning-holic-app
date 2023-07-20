@@ -19,7 +19,7 @@ class CustomDropdown extends StatefulWidget {
     required this.onChanged,
     this.hint = 'initial',
     this.width = 100.0,
-    this.height = 50.0,
+    this.height = 45.0,
     this.fontSize = 20.0,
   }) : super(key: key);
 
@@ -30,6 +30,7 @@ class CustomDropdown extends StatefulWidget {
 class _CustomDropdownState extends State<CustomDropdown> {
   bool _showMenu = false;
   String? _selectedValue;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -39,43 +40,42 @@ class _CustomDropdownState extends State<CustomDropdown> {
 
   BorderSide borderSide = const BorderSide(
     color: Colors.grey,
-    width: 1.5,
+    width: 1.0,
   );
 
   @override
   Widget build(BuildContext context) {
     return DropdownButtonHideUnderline(
-          child: DropdownButton2(
-            isExpanded: true,
-            hint: _getHint(),
-            items: widget.options
-                .map((item) => _getDropdownMenuItem(item))
-                .toList(),
-            value: _selectedValue,
-            onChanged: (newValue){
-              setState(() {
-                _selectedValue = newValue;
-                widget.onChanged(newValue);
-              });
-            },
-            onMenuStateChange: (showMenu) => _onMenuStateChange(showMenu),
-            buttonStyleData: _getButtonStyleData(),
-            iconStyleData: _getIconStyleData(),
-            dropdownStyleData: _getDropdownStyleData(),
-            menuItemStyleData: _getMenuItemStyleData(),
-          ),
-        );
+      child: DropdownButton2(
+        isExpanded: true,
+        hint: _getHint(),
+        items:
+            widget.options.map((item) => _getDropdownMenuItem(item)).toList(),
+        value: _selectedValue,
+        onChanged: (newValue) {
+          setState(() {
+            _selectedValue = newValue;
+            widget.onChanged(newValue);
+          });
+        },
+        onMenuStateChange: (showMenu) => _onMenuStateChange(showMenu),
+        buttonStyleData: _getButtonStyleData(),
+        iconStyleData: _getIconStyleData(),
+        dropdownStyleData: _getDropdownStyleData(),
+        menuItemStyleData: _getMenuItemStyleData(),
+      ),
+    );
   }
 
   Row _getHint() {
     return Row(
-      children:[
+      children: [
         Expanded(
           child: Text(
             widget.hint,
             style: const TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.bold,
+              fontWeight: FontWeight.w500,
               color: Colors.black,
             ),
           ),
@@ -87,16 +87,13 @@ class _CustomDropdownState extends State<CustomDropdown> {
   DropdownMenuItem<String> _getDropdownMenuItem(String item) {
     return DropdownMenuItem<String>(
       value: item,
-      child: Padding(
-        padding: const EdgeInsets.only(left: 14, right: 14),
-        child: Text(
-          item,
-          style: const TextStyle(
-            fontSize: 14,
-            color: Colors.black,
-          ),
-          overflow: TextOverflow.ellipsis,
+      child: Text(
+        item,
+        style: const TextStyle(
+          fontSize: 14,
+          color: Colors.black,
         ),
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }
@@ -115,34 +112,27 @@ class _CustomDropdownState extends State<CustomDropdown> {
 
   ButtonStyleData _getButtonStyleData() {
     return ButtonStyleData(
-      width: 100,
-      height: 50,
-      padding: widget.selectedValue == null
-          ? const EdgeInsets.only(left: 14, right: 14)
-          : null,
+      width: widget.width,
+      height: widget.height,
+      padding: const EdgeInsets.only(left: 14, right: 14),
       decoration: BoxDecoration(
         borderRadius: _showMenu
             ? const BorderRadius.vertical(top: Radius.circular(10))
             : BorderRadius.circular(10),
-        border: Border.all(
-            color: PRIMARY_COLOR,
-            width: 2.0
-        ),
-        color: Colors.white,
+        border: Border.all(color: GREY_COLOR, width: 0.3),
+        color: BACKGROUND_COLOR,
       ),
-      elevation: 2,
+      elevation: 0,
     );
   }
 
   IconStyleData _getIconStyleData() {
     return IconStyleData(
       icon: Icon(
-        _showMenu
-            ? Icons.keyboard_arrow_up
-            : Icons.keyboard_arrow_down,
-        color: PRIMARY_COLOR,
+        _showMenu ? Icons.arrow_drop_up : Icons.arrow_drop_down,
+        color: GREY_COLOR,
       ),
-      iconSize: 18,
+      iconSize: 24,
     );
   }
 
@@ -152,16 +142,15 @@ class _CustomDropdownState extends State<CustomDropdown> {
       maxHeight: 200,
       decoration: BoxDecoration(
         border: Border.fromBorderSide(borderSide),
-        borderRadius: const BorderRadius.vertical(
-            bottom: Radius.circular(10)
-        ),
-        color: Colors.white,
+        borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10)),
+        color: BACKGROUND_COLOR,
       ),
       scrollbarTheme: ScrollbarThemeData(
         radius: const Radius.circular(40),
         thickness: MaterialStateProperty.all<double>(6),
         thumbVisibility: MaterialStateProperty.all<bool>(true),
       ),
+      elevation: 0,
     );
   }
 
@@ -172,11 +161,9 @@ class _CustomDropdownState extends State<CustomDropdown> {
           return Container(
             decoration: BoxDecoration(
                 color: PRIMARY_COLOR,
-                border: Border.symmetric(vertical: borderSide)
-            ),
+                border: Border.symmetric(vertical: borderSide)),
             child: child,
           );
-        }
-    );
+        });
   }
 }
