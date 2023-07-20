@@ -22,13 +22,6 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    AuthRepository authRepository = AuthRepository();
-
-    final signUpRequest = ModalRoute
-        .of(context)!
-        .settings
-        .arguments as SignUpModel;
-
     return Scaffold(
       appBar: CustomAppBar(context: context),
       body: Padding(
@@ -46,42 +39,52 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
               textController: nicknameController,
               placeHolder: '닉네임',
               maxLength: 20,
-              validator: (value) {
-                if (isNicknameDuplicated) {
-                  return '이미 존재하는 닉네임입니다.';
-                } else {
-                  return null;
-                }
-              },
+              validator: nicknameValidator,
               isValidatorOn: isValidatorOn,
             ),
             SizedBox.fromSize(size: const Size(0, 30)),
             CustomElevatedButton(
               text: '다음',
-              onPressed: () async {
-                setState(() {
-                  isValidatorOn = false;
-                  isNicknameDuplicated = false;
-                });
-                SignUpRequest request = SignUpRequest(
-                  name: signUpRequest.name,
-                  phoneNumber: signUpRequest.phoneNumber,
-                  password: signUpRequest.password,
-                  nickname: nicknameController.text,
-                );
-
-                final response = await authRepository.signUp(request);
-                if (response is String) {
-                  setState(() {
-                    isValidatorOn = true;
-                    isNicknameDuplicated = true;
-                  });
-                }
-              },
+              onPressed: buttonOnPressed,
             )
           ],
         ),
       ),
     );
+  }
+
+  String? nicknameValidator(String? value) {
+    if (isNicknameDuplicated) {
+      return '이미 존재하는 닉네임입니다.';
+    } else {
+      return null;
+    }
+  }
+
+  void buttonOnPressed() async {
+    setState(() {
+      isValidatorOn = false;
+      isNicknameDuplicated = false;
+    });
+    final signUpRequest = ModalRoute
+        .of(context)!
+        .settings
+        .arguments as SignUpModel;
+
+    SignUpRequest request = SignUpRequest(
+      name: signUpRequest.name,
+      phoneNumber: signUpRequest.phoneNumber,
+      password: signUpRequest.password,
+      nickname: nicknameController.text,
+    );
+
+    AuthRepository authRepository = AuthRepository();
+    final response = await authRepository.signUp(request);
+    if (response is String) {
+      setState(() {
+        isValidatorOn = true;
+        isNicknameDuplicated = true;
+      });
+    }
   }
 }
