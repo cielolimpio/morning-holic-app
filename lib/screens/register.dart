@@ -9,6 +9,8 @@ import 'package:morning_holic_app/components/elevated_button.dart';
 import 'package:morning_holic_app/components/radio_button.dart';
 import 'package:morning_holic_app/components/text_form_field.dart';
 import 'package:morning_holic_app/components/title.dart';
+import 'package:morning_holic_app/enums/BankEnum.dart';
+import 'package:morning_holic_app/enums/ModeEnum.dart';
 import 'package:morning_holic_app/payloads/request/register_request.dart';
 import 'package:morning_holic_app/provider/register_state.dart';
 import 'package:morning_holic_app/repositories/user_repository.dart';
@@ -28,6 +30,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
     TextEditingController bankAccountController = TextEditingController();
 
     return Scaffold(
+      appBar: CustomAppBar(
+        context: context,
+        hasIcon: false,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: SingleChildScrollView(
@@ -35,7 +41,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CustomAppBar(context: context),
               const CustomTitle(
                   title: "8월 모닝홀릭 신청",
                   description: "8월 모닝홀릭이 시작되기 전에는 아래 정보들을 언제든지 변경할 수 있습니다."),
@@ -56,7 +61,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       '8시'
                     ],
                     hint: '목표 기상시간',
-                    selectedValue: registerState.targetWakeupTime,
+                    selectedValue: registerState.targetWakeUpTime,
                     onChanged: (newValue) {
                       registerState.updateWakeupTime(newValue!);
                     });
@@ -89,10 +94,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
               ),
               Consumer<RegisterState>(builder: (context, registerState, _) {
                 return CustomRadioButton(
-                  options: const ['마일드 모드', '챌린지 모드'],
-                  currentValue: registerState.mode,
+                  options: ModeEnum.values.map((e) => e.displayName).toList(),
+                  currentValue: registerState.mode?.displayName,
                   onChanged: (newValue) {
-                    registerState.updateMode(newValue!);
+                    registerState.updateMode(ModeEnum.getByDisplayName(newValue!));
                   },
                 );
               }),
@@ -115,11 +120,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     children: [
                       CustomDropdown(
                         width: 150.0,
-                        options: const ['국민', '우리', '기업', '카카오뱅크', '신한', '농협'],
+                        options: BankEnum.values.map((e) => e.displayName).toList(),
                         hint: '은행',
-                        selectedValue: registerState.refundBankName,
+                        selectedValue: registerState.refundBankName?.displayName,
                         onChanged: (newValue) {
-                          registerState.refundBankName = newValue;
+                          registerState.updateRefundBankName(BankEnum.getByDisplayName(newValue!));
                         },
                       ),
                       const Spacer(),
@@ -131,7 +136,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 height: 10,
               ),
               CustomTextFormField(
-                  textController: bankAccountController, placeHolder: '계좌 번호'),
+                textController: bankAccountController,
+                placeHolder: '계좌 번호',
+                maxLength: 20,
+              ),
               const SizedBox(
                 height: 30,
               ),
@@ -188,20 +196,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   text: '신청 완료',
                   onPressed: () async {
                     // TODO
-                    String? refundBankName;
-                    String? mode;
-                    String? targetWakeupTime;
-
                     RegisterState registerState = context.read<RegisterState>();
-                    refundBankName = registerState.refundBankName;
-                    mode = registerState.mode;
-                    targetWakeupTime = registerState.targetWakeupTime;
+                    if (registerState.refundBankName == null ||
+                        registerState.mode == null ||
+                        registerState.targetWakeUpTime == null) {
+                      // error 처리
+                      return;
+                    }
+
+                    String targetWakeUpTime = registerState.targetWakeUpTime!;
 
                     RegisterRequest registerRequest = RegisterRequest(
-                        refundBankName: registerState.refundBankName!,
-                        refundAccount: bankAccountController.text,
-                        mode: registerState.mode!,
-                        targetWakeUpTime: registerState.targetWakeupTime!);
+                      refundBankName: registerState.refundBankName!.value,
+                      refundAccount: bankAccountController.text,
+                      mode: registerState.mode!.value,
+                      targetWakeUpTime: convertToDateTime(targetWakeUpTime),
+                    );
 
                     final response =
                         await userRepository.register(registerRequest);
@@ -214,5 +224,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
         ),
       ),
     );
+  }
+
+  DateTime convertToDateTime(String targetWakeUpTime) {
+    List<String> list = targetWakeUpTime.split('시');
+    int hour = int.parse(list.first);
+    print(list[1].isNotEmpty);
+    int minute = list[1].isNotEmpty ? 30 : 0;
+    return DateTime(2023, 7, 3, hour, minute).toUtc();
   }
 }

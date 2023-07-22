@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: BACKGROUND_COLOR,
         fontFamily: 'AppleSDGothicNeo',
       ),
-      initialRoute: '/register',
+      initialRoute: '/welcome',
 
       routes: {
         '/welcome':(context) => WelcomeScreen(),

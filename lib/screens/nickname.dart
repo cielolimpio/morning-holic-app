@@ -85,6 +85,8 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
         isValidatorOn = true;
         isNicknameDuplicated = true;
       });
+    } else {
+      Navigator.pushNamed(context, '/register');
     }
   }
 }
