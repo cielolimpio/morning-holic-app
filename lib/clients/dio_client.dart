@@ -16,7 +16,7 @@ class DioClient {
   Dio get dioWithoutAccessToken => _dioWithoutAccessToken;
 
   var options = BaseOptions(
-    baseUrl: 'http://localhost:9000/api',
+    baseUrl: 'http://13.125.148.166:9001/api/',
     contentType: Headers.jsonContentType,
   );
 
@@ -33,8 +33,7 @@ class DioClient {
         return handler.next(options);
       },
       onError: (error, handler) async {
-        if(error.response?.data is Map && error.response?.data['code'] == 1){
-        // if (error.response?.data.code == 1) {
+        if (error.response?.data['code'] == 1) {
           final isSuccess = await refreshAccessToken();
           if (isSuccess) {
             return handler.resolve(

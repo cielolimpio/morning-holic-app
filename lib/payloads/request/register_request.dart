@@ -7,7 +7,7 @@ class RegisterRequest {
   final String refundBankName;
   final String refundAccount;
   final String mode;
-  final String targetWakeUpTime;
+  final DateTime targetWakeUpTime;
 
   RegisterRequest({
     required this.refundBankName,
@@ -17,6 +17,6 @@ class RegisterRequest {
   });
 
   factory RegisterRequest.fromJson(Map<String, dynamic> json) =>
-      _$SignUpRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$SignUpRequestToJson(this);
+      _$RegisterRequestFromJson(json);
+  Map<String, dynamic> toJson() => _$RegisterRequestToJson(this);
 }

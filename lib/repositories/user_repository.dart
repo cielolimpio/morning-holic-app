@@ -14,12 +14,9 @@ class UserRepository{
 
   register(RegisterRequest request) async {
     try {
-      final response = await _dioClient.dio.post('/user/register', data: request.toJson());
-      final jwtToken = JwtTokenResponse.fromJson(response.data);
-      _dioClient.setUserInfo(jwtToken);
+      await _dioClient.dio.post('/user/register', data: request.toJson());
     } on DioException catch (e) {
-      if (e.response?.data is Map && e.response?.data['code'] == 1003) {
-      // if (e.response?.data?['code'] == 1003) {
+      if ([2001, 2002, 2003].contains(e.response?.data?['code'])) {
         return e.response!.data['message'];
       }
       rethrow;
