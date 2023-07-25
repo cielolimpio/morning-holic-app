@@ -37,6 +37,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
               maxLines: 1,
               style: TextStyle(
                 fontSize: widget.fontSize,
+                fontWeight: FontWeight.w500,
               ),
             ),
             value: option,

@@ -86,7 +86,7 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
         isNicknameDuplicated = true;
       });
     } else {
-      Navigator.pushNamed(context, '/register');
+      Navigator.pushNamed(context, '/user/status/initial');
     }
   }
 }

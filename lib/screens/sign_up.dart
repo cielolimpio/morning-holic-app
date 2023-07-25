@@ -48,7 +48,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            CustomTitle(
+            const CustomTitle(
               title: '회원가입',
               description: '회원가입에 필요한 정보들을 입력해주세요.',
             ),

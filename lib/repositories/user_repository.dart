@@ -4,12 +4,22 @@ import 'package:morning_holic_app/clients/dio_client.dart';
 
 import '../payloads/request/register_request.dart';
 import '../payloads/response/jwt_token_response.dart';
+import '../payloads/response/register_response.dart';
 
 class UserRepository{
   late DioClient _dioClient;
 
   UserRepository(){
     _dioClient = DioClient();
+  }
+
+  Future<RegisterResponse> getRegisterData() async {
+    try {
+      final response = await _dioClient.dio.get('/user/register');
+      return RegisterResponse.fromJson(response.data);
+    } on DioException catch (e) {
+      rethrow;
+    }
   }
 
   register(RegisterRequest request) async {
