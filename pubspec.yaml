@@ -37,6 +37,7 @@ dependencies:
   shared_preferences: ^2.2.0
   json_annotation: ^4.8.1
   provider : ^6.0.5
+  webview_flutter: ^4.2.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -78,10 +79,12 @@ flutter:
       fonts:
         - asset: assets/font/AppleSDGothicNeoR.ttf
           weight: 500
-        - asset: assets/font/AppleSDGothicNeoSB.ttf
+        - asset: assets/font/AppleSDGothicNeoM.ttf
           weight: 600
-        - asset: assets/font/AppleSDGothicNeoB.ttf
+        - asset: assets/font/AppleSDGothicNeoSB.ttf
           weight: 700
+        - asset: assets/font/AppleSDGothicNeoB.ttf
+          weight: 800
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

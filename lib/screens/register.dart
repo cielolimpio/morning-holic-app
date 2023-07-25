@@ -26,13 +26,11 @@ class RegisterScreen extends StatefulWidget {
 class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
-    UserRepository userRepository = UserRepository();
     TextEditingController bankAccountController = TextEditingController();
 
     return Scaffold(
       appBar: CustomAppBar(
         context: context,
-        hasIcon: false,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -44,186 +42,203 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const CustomTitle(
                   title: "8월 모닝홀릭 신청",
                   description: "8월 모닝홀릭이 시작되기 전에는 아래 정보들을 언제든지 변경할 수 있습니다."),
-              const SizedBox(
-                height: 30,
-              ),
-              Consumer<RegisterState>(builder: (context, registerState, _) {
-                return CustomDropdown(
-                    options: const [
-                      '4시',
-                      '4시 30분',
-                      '5시',
-                      '5시 30분',
-                      '6시',
-                      '6시 30분',
-                      '7시',
-                      '7시 30분',
-                      '8시'
-                    ],
-                    hint: '목표 기상시간',
-                    selectedValue: registerState.targetWakeUpTime,
-                    onChanged: (newValue) {
-                      registerState.updateWakeupTime(newValue!);
-                    });
-              }),
-              const SizedBox(
-                height: 30,
-              ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text(
-                    '모드 선택',
-                    style: TextStyle(
-                      fontSize: 15.0,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  InfoPopupWidget(
-                    contentTitle: '마일드 모드: 심플, 챌린지 모드 : 어려움',
-                    child: Icon(
-                      Icons.help_outline_rounded,
-                      color: Colors.black,
-                      size: 15,
-                    ),
-                  ),
-                ],
-              ),
-              Consumer<RegisterState>(builder: (context, registerState, _) {
-                return CustomRadioButton(
-                  options: ModeEnum.values.map((e) => e.displayName).toList(),
-                  currentValue: registerState.mode?.displayName,
-                  onChanged: (newValue) {
-                    registerState.updateMode(ModeEnum.getByDisplayName(newValue!));
-                  },
-                );
-              }),
-              const SizedBox(
-                height: 30,
-              ),
-              const Text(
-                '환급 받을 계좌',
-                style: TextStyle(
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Consumer<RegisterState>(
-                builder: (context, registerState, _) {
-                  return Row(
-                    children: [
-                      CustomDropdown(
-                        width: 150.0,
-                        options: BankEnum.values.map((e) => e.displayName).toList(),
-                        hint: '은행',
-                        selectedValue: registerState.refundBankName?.displayName,
-                        onChanged: (newValue) {
-                          registerState.updateRefundBankName(BankEnum.getByDisplayName(newValue!));
-                        },
-                      ),
-                      const Spacer(),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              CustomTextFormField(
-                textController: bankAccountController,
-                placeHolder: '계좌 번호',
-                maxLength: 20,
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    CupertinoIcons.exclamationmark,
-                    color: Color(0xFFFF0000),
-                    size: 20,
-                  ),
-                  SizedBox(width: 12),
-                  Text(
-                    '꼭 확인해주세요',
-                    style: TextStyle(
-                      color: Color(0xFFFF0000),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                  SizedBox(width: 12),
-                  Icon(
-                    CupertinoIcons.exclamationmark,
-                    color: Color(0xFFFF0000),
-                    size: 20,
-                  )
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                '입금 계좌: [토스뱅크 100067440674 김유민]',
-                style: TextStyle(fontSize: 13),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                '마일드모드: 30,000원\n챌린지모드: 50,000원',
-                style: TextStyle(fontSize: 13),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              const Text(
-                '보증금을 입금해주시면 입금 확인 후 승인됩니다. 입금이 안 된 경우 신청이 반려될 수 있습니다.',
-                style: TextStyle(fontSize: 13),
-              ),
-              const SizedBox(
-                height: 30,
-              ),
-              CustomElevatedButton(
-                  text: '신청 완료',
-                  onPressed: () async {
-                    // TODO
-                    RegisterState registerState = context.read<RegisterState>();
-                    if (registerState.refundBankName == null ||
-                        registerState.mode == null ||
-                        registerState.targetWakeUpTime == null) {
-                      // error 처리
-                      return;
-                    }
-
-                    String targetWakeUpTime = registerState.targetWakeUpTime!;
-
-                    RegisterRequest registerRequest = RegisterRequest(
-                      refundBankName: registerState.refundBankName!.value,
-                      refundAccount: bankAccountController.text,
-                      mode: registerState.mode!.value,
-                      targetWakeUpTime: convertToDateTime(targetWakeUpTime),
-                    );
-
-                    final response =
-                        await userRepository.register(registerRequest);
-                    if (response is String) {
-                      print(response);
-                    }
-                  }),
+              const SizedBox(height: 30),
+              _targetWakeUpTimeDropdownBox,
+              const SizedBox(height: 30),
+              _modeSelection,
+              const SizedBox(height: 30),
+              _refundAccountInput(bankAccountController),
+              const SizedBox(height: 30),
+              _checkPleaseText,
+              const SizedBox(height: 30),
+              _completeButton(context, bankAccountController),
             ],
           ),
         ),
       ),
     );
+  }
+
+  final _targetWakeUpTimeDropdownBox =
+      Consumer<RegisterState>(builder: (context, registerState, _) {
+    return CustomDropdown(
+        options: const [
+          '4시',
+          '4시 30분',
+          '5시',
+          '5시 30분',
+          '6시',
+          '6시 30분',
+          '7시',
+          '7시 30분',
+          '8시'
+        ],
+        hint: '목표 기상시간',
+        selectedValue: registerState.targetWakeUpTime,
+        onChanged: (newValue) {
+          registerState.updateWakeupTime(newValue!);
+        });
+  });
+
+  final Column _modeSelection = Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            '모드 선택',
+            style: TextStyle(
+              fontSize: 15.0,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(width: 5),
+          InfoPopupWidget(
+            contentTitle: '마일드 모드: 심플, 챌린지 모드 : 어려움',
+            child: Icon(
+              Icons.help_outline_rounded,
+              color: Colors.black,
+              size: 15,
+            ),
+          ),
+        ],
+      ),
+      Consumer<RegisterState>(builder: (context, registerState, _) {
+        return CustomRadioButton(
+          options: ModeEnum.values.map((e) => e.displayName).toList(),
+          currentValue: registerState.mode?.displayName,
+          onChanged: (newValue) {
+            registerState.updateMode(ModeEnum.getByDisplayName(newValue!));
+          },
+        );
+      })
+    ],
+  );
+
+  Column _refundAccountInput(TextEditingController bankAccountController) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          '환급 받을 계좌',
+          style: TextStyle(
+            fontSize: 15.0,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 10),
+        Consumer<RegisterState>(
+          builder: (context, registerState, _) {
+            return Row(
+              children: [
+                CustomDropdown(
+                  width: 150.0,
+                  options: BankEnum.values.map((e) => e.displayName).toList(),
+                  hint: '은행',
+                  selectedValue: registerState.refundBankName?.displayName,
+                  onChanged: (newValue) {
+                    registerState.updateRefundBankName(
+                        BankEnum.getByDisplayName(newValue!));
+                  },
+                ),
+                const Spacer(),
+              ],
+            );
+          },
+        ),
+        const SizedBox(height: 10),
+        CustomTextFormField(
+          textController: bankAccountController,
+          placeHolder: '계좌 번호',
+          maxLength: 20,
+        )
+      ],
+    );
+  }
+
+  final _checkPleaseText = const Column(
+    mainAxisAlignment: MainAxisAlignment.start,
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            CupertinoIcons.exclamationmark,
+            color: Color(0xFFFF0000),
+            size: 20,
+          ),
+          SizedBox(width: 12),
+          Text(
+            '꼭 확인해주세요',
+            style: TextStyle(
+              color: Color(0xFFFF0000),
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          SizedBox(width: 12),
+          Icon(
+            CupertinoIcons.exclamationmark,
+            color: Color(0xFFFF0000),
+            size: 20,
+          )
+        ],
+      ),
+      SizedBox(height: 20),
+      Text(
+        '입금 계좌: [토스뱅크 100067440674 김유민]',
+        style: TextStyle(fontSize: 13),
+      ),
+      SizedBox(height: 10),
+      Text(
+        '마일드모드: 30,000원\n챌린지모드: 50,000원',
+        style: TextStyle(fontSize: 13),
+      ),
+      SizedBox(height: 10),
+      Text(
+        '보증금을 입금해주시면 입금 확인 후 승인됩니다. 입금이 안 된 경우 신청이 반려될 수 있습니다.',
+        style: TextStyle(fontSize: 13),
+      )
+    ],
+  );
+
+  CustomElevatedButton _completeButton(
+    BuildContext context,
+    TextEditingController bankAccountController,
+  ) {
+    UserRepository userRepository = UserRepository();
+
+    return CustomElevatedButton(
+        text: '신청 완료',
+        onPressed: () async {
+          // TODO
+          RegisterState registerState = context.read<RegisterState>();
+          if (registerState.refundBankName == null ||
+              registerState.mode == null ||
+              registerState.targetWakeUpTime == null) {
+            // error 처리
+            return;
+          }
+
+          String targetWakeUpTime = registerState.targetWakeUpTime!;
+
+          RegisterRequest registerRequest = RegisterRequest(
+            refundBankName: registerState.refundBankName!.value,
+            refundAccount: bankAccountController.text,
+            mode: registerState.mode!.value,
+            targetWakeUpTime: convertToDateTime(targetWakeUpTime),
+          );
+
+          final response = await userRepository.register(registerRequest);
+          if (response is String) {
+            print(response);
+          } else {
+            Navigator.pushNamed(context, '/register/complete');
+          }
+        });
   }
 
   DateTime convertToDateTime(String targetWakeUpTime) {

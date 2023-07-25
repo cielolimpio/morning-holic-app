@@ -16,7 +16,7 @@ class DioClient {
   Dio get dioWithoutAccessToken => _dioWithoutAccessToken;
 
   var options = BaseOptions(
-    baseUrl: 'http://13.125.148.166:9001/api/',
+    baseUrl: 'http://54.180.78.85:9001/api/',
     contentType: Headers.jsonContentType,
   );
 
