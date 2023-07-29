@@ -7,7 +7,7 @@ class RegisterRequest {
   final String refundBankName;
   final String refundAccount;
   final String mode;
-  final String targetWakeUpTime;
+  final DateTime targetWakeUpTime;
 
   RegisterRequest({
     required this.refundBankName,
