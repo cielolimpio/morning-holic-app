@@ -7,7 +7,7 @@ class CustomTitle extends StatelessWidget {
 
   const CustomTitle({
     required this.title,
-    required this.description,
+    this.description = "",
     super.key
   });
 

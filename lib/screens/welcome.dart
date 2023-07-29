@@ -46,7 +46,9 @@ class _WelcomeButtons extends StatelessWidget {
           },
         ),
         TextButton(
-          onPressed: () {},
+          onPressed: () {
+            Navigator.pushNamed(context, '/login');
+          },
           child: Text(
             '이미 가입된 계정이 있다면?',
             style: TextStyle(
