@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:morning_holic_app/enums/UserStatusEnum.dart';
 import 'package:morning_holic_app/payloads/request/login_request.dart';
+import 'package:morning_holic_app/payloads/response/get_user_status_response.dart';
 import 'package:morning_holic_app/repositories/auth_repository.dart';
 import 'package:morning_holic_app/screens/sign_up.dart';
 
@@ -101,7 +103,6 @@ class _LoginScreenState extends State<LoginScreen> {
                   });
                 } else {
                     // TODO
-                    // success
                     LoginRequest loginRequest = LoginRequest(
                         phoneNumber: phoneNumberController.text,
                         password: passwordController.text);
@@ -111,12 +112,28 @@ class _LoginScreenState extends State<LoginScreen> {
                     } else{
                       // Success
                       // TODO : User 상태에 따라 Redirect 다르게 해야함.
+                      final response = await authRepository.getUserStatus();
+                      if(response is String){
 
-                      // 신청 X -> register screen
-                      Navigator.pushNamed(
-                        context,
-                        '/register',
-                      );
+                      } else {
+                        GetUserStatusResponse res = response as GetUserStatusResponse;
+                        UserStatusEnum userStatus = res.userStatus;
+
+                        if(userStatus == UserStatusEnum.INITIAL){
+                          // 신청 X -> register screen
+                          Navigator.pushNamed(context, '/register');
+                        } else if(userStatus == UserStatusEnum.REQUEST){
+                          Navigator.pushNamed(context, '/user/status/register');
+                        } else if(userStatus == UserStatusEnum.ACCEPT){
+                          // Navigator.pushNamed(context, '/home')
+                        } else if(userStatus == UserStatusEnum.REJECT){
+                          print(res.rejectReason);
+                          print(res.userStatus);
+                          Navigator.pushNamed(context, '/user/status/reject',
+                              arguments: res.rejectReason);
+                        }
+
+                      }
 
                       // 신청 O ->
                     }

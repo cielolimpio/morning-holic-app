@@ -2,12 +2,14 @@
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/constants/color.dart';
 import 'package:morning_holic_app/provider/register_state.dart';
+import 'package:morning_holic_app/screens/login.dart';
 import 'package:morning_holic_app/screens/nickname.dart';
 import 'package:morning_holic_app/screens/register.dart';
 import 'package:morning_holic_app/screens/register_complete.dart';
 import 'package:morning_holic_app/screens/sign_up.dart';
 import 'package:morning_holic_app/screens/user_initial_status.dart';
 import 'package:morning_holic_app/screens/user_register_status.dart';
+import 'package:morning_holic_app/screens/user_reject_status.dart';
 import 'package:morning_holic_app/screens/welcome.dart';
 import 'package:provider/provider.dart';
 
@@ -40,7 +42,8 @@ class MyApp extends StatelessWidget {
         '/register/complete':(context) => RegisterCompleteScreen(),
         '/user/status/initial':(context) => UserInitialStatusScreen(),
         '/user/status/register':(context) => UserRegisterStatusScreen(),
-        // '/login':(context) => LoginScreen(),
+        '/login':(context) => LoginScreen(),
+        '/user/status/reject':(context) => UserRejectStatusScreen(),
         // '/home': (context) => HomeScreen(),
         // '/createProfile' :(context) => CreateProfileScreen(),
         // '/searchDetails' : (context) => SearchDetailsScreen(),
