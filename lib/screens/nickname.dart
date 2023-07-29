@@ -85,6 +85,7 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
         isValidatorOn = true;
         isNicknameDuplicated = true;
       });
+
     }
   }
 }
