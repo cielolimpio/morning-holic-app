@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:morning_holic_app/clients/dio_client.dart';
 import 'package:morning_holic_app/payloads/request/sign_up_request.dart';
+import 'package:morning_holic_app/payloads/response/get_user_status_response.dart';
 
 import '../payloads/request/login_request.dart';
 import '../payloads/response/jwt_token_response.dart';
@@ -48,6 +49,21 @@ class AuthRepository {
       print(e);
       if (e.response?.data is Map && e.response?.data['code'] == 1003) {
         // if (e.response?.data?['code'] == 1003) {
+        return e.response!.data['message'];
+      }
+      throw e;
+    }
+  }
+
+  getUserStatus() async{
+    try{
+      final response = await _dioClient.dio.get('/user/status');
+      final userStatus = GetUserStatusResponse.fromJson(response.data);
+      return userStatus;
+
+    } on DioException catch (e){
+      print(e);
+      if (e.response?.data is Map && e.response?.data['code'] == 1003) {
         return e.response!.data['message'];
       }
       throw e;
