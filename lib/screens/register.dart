@@ -9,9 +9,11 @@ import 'package:morning_holic_app/components/elevated_button.dart';
 import 'package:morning_holic_app/components/radio_button.dart';
 import 'package:morning_holic_app/components/text_form_field.dart';
 import 'package:morning_holic_app/components/title.dart';
+import 'package:morning_holic_app/dtos/target_wake_up_time_model.dart';
 import 'package:morning_holic_app/enums/BankEnum.dart';
 import 'package:morning_holic_app/enums/ModeEnum.dart';
 import 'package:morning_holic_app/payloads/request/register_request.dart';
+import 'package:morning_holic_app/payloads/response/register_response.dart';
 import 'package:morning_holic_app/provider/register_state.dart';
 import 'package:morning_holic_app/repositories/user_repository.dart';
 import 'package:provider/provider.dart';
@@ -24,9 +26,33 @@ class RegisterScreen extends StatefulWidget {
 }
 
 class _RegisterScreenState extends State<RegisterScreen> {
+  TextEditingController bankAccountController = TextEditingController();
+  bool isFirstRegister = true;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final registerData = ModalRoute.of(context)!.settings.arguments as RegisterResponse?;
+
+      if (registerData != null) {
+        setState(() {
+          isFirstRegister = false;
+        });
+        final bankNameAndAccount = registerData.refundBankNameAndAccount.split(' ');
+        final bankName = BankEnum.getByDisplayName(bankNameAndAccount[0]);
+        bankAccountController.text = bankNameAndAccount[1];
+
+        final registerState = Provider.of<RegisterState>(context, listen: false);
+        registerState.updateWakeupTime(targetWakeUpTimeModelToString(registerData.targetWakeUpTime));
+        registerState.updateRefundBankName(bankName);
+        registerState.updateMode(registerData.mode);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController bankAccountController = TextEditingController();
 
     return Scaffold(
       appBar: CustomAppBar(
@@ -60,7 +86,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   final _targetWakeUpTimeDropdownBox =
-      Consumer<RegisterState>(builder: (context, registerState, _) {
+    Consumer<RegisterState>(builder: (context, registerState, _) {
     return CustomDropdown(
         options: const [
           '4시',
@@ -212,7 +238,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     UserRepository userRepository = UserRepository();
 
     return CustomElevatedButton(
-        text: '신청 완료',
+        text: isFirstRegister ? '신청 완료' : '수정 완료',
         onPressed: () async {
           // TODO
           RegisterState registerState = context.read<RegisterState>();
@@ -229,7 +255,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             refundBankName: registerState.refundBankName!.value,
             refundAccount: bankAccountController.text,
             mode: registerState.mode!.value,
-            targetWakeUpTime: convertToDateTime(targetWakeUpTime),
+            targetWakeUpTime: stringToTargetWakeUpTimeModel(targetWakeUpTime),
           );
 
           final response = await userRepository.register(registerRequest);
@@ -241,11 +267,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
         });
   }
 
-  DateTime convertToDateTime(String targetWakeUpTime) {
+  TargetWakeUpTimeModel stringToTargetWakeUpTimeModel(String targetWakeUpTime) {
     List<String> list = targetWakeUpTime.split('시');
     int hour = int.parse(list.first);
-    print(list[1].isNotEmpty);
     int minute = list[1].isNotEmpty ? 30 : 0;
-    return DateTime(2023, 7, 3, hour, minute).toUtc();
+    return TargetWakeUpTimeModel(hour: hour, minute: minute);
+  }
+
+  String targetWakeUpTimeModelToString(TargetWakeUpTimeModel targetWakeUpTimeModel) {
+    if (targetWakeUpTimeModel.minute == 0) {
+      return "${targetWakeUpTimeModel.hour}시";
+    } else {
+      return "${targetWakeUpTimeModel.hour}시 ${targetWakeUpTimeModel.minute}";
+    }
   }
 }
