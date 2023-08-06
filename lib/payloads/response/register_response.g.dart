@@ -8,14 +8,15 @@ part of 'register_response.dart';
 
 RegisterResponse _$RegisterResponseFromJson(Map<String, dynamic> json) =>
     RegisterResponse(
-      targetWakeUpTime: DateTime.parse(json['targetWakeUpTime'] as String),
+      targetWakeUpTime: TargetWakeUpTimeModel.fromJson(
+          json['targetWakeUpTime'] as Map<String, dynamic>),
       refundBankNameAndAccount: json['refundBankNameAndAccount'] as String,
       mode: $enumDecode(_$ModeEnumEnumMap, json['mode']),
     );
 
 Map<String, dynamic> _$RegisterResponseToJson(RegisterResponse instance) =>
     <String, dynamic>{
-      'targetWakeUpTime': instance.targetWakeUpTime.toIso8601String(),
+      'targetWakeUpTime': instance.targetWakeUpTime,
       'refundBankNameAndAccount': instance.refundBankNameAndAccount,
       'mode': _$ModeEnumEnumMap[instance.mode]!,
     };

@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:morning_holic_app/dtos/target_wake_up_time_model.dart';
 
 part 'register_request.g.dart';
 
@@ -7,7 +8,7 @@ class RegisterRequest {
   final String refundBankName;
   final String refundAccount;
   final String mode;
-  final DateTime targetWakeUpTime;
+  final TargetWakeUpTimeModel targetWakeUpTime;
 
   RegisterRequest({
     required this.refundBankName,
