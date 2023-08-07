@@ -9,8 +9,6 @@ class CustomTextFormField extends StatefulWidget {
   String? Function(String?)? validator;
   bool isValidatorOn;
 
-  double width;
-  double height;
   List<TextInputFormatter>? textInputFormatters;
   int maxLength;
 
@@ -19,8 +17,6 @@ class CustomTextFormField extends StatefulWidget {
     required this.placeHolder,
     this.validator,
     this.isValidatorOn = false,
-    this.width = 320.0,
-    this.height = 30.0,
     this.textInputFormatters,
     this.maxLength = 10,
     super.key,
