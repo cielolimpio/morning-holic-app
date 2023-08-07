@@ -36,7 +36,13 @@ class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
   @override
   Widget build(BuildContext context) {
     if (registerData == null) {
-      return CircularProgressIndicator();
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(PRIMARY_COLOR),
+          ),
+        ),
+      );
     } else {
       return Scaffold(
         appBar: CustomAppBar(

@@ -121,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         if(userStatus == UserStatusEnum.INITIAL){
                           // 신청 X -> register screen
-                          Navigator.pushNamed(context, '/register');
+                          Navigator.pushNamed(context, '/user/status/initial');
                         } else if(userStatus == UserStatusEnum.REQUEST){
                           Navigator.pushNamed(context, '/user/status/register');
                         } else if(userStatus == UserStatusEnum.ACCEPT){
