@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:info_popup/info_popup.dart';
 import 'package:morning_holic_app/components/app_bar.dart';
 import 'package:morning_holic_app/components/dropdown.dart';
@@ -179,6 +180,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           textController: bankAccountController,
           placeHolder: '계좌 번호',
           maxLength: 20,
+          textInputFormatters: [
+            FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+          ],
         )
       ],
     );
