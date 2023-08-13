@@ -4,6 +4,7 @@ import 'package:morning_holic_app/components/app_bar.dart';
 import 'package:morning_holic_app/components/elevated_button.dart';
 import 'package:morning_holic_app/components/title.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/dtos/target_wake_up_time_model.dart';
 import 'package:morning_holic_app/payloads/response/register_response.dart';
 import 'package:morning_holic_app/repositories/user_repository.dart';
 
@@ -11,7 +12,8 @@ class UserRegisterStatusScreen extends StatefulWidget {
   const UserRegisterStatusScreen({super.key});
 
   @override
-  State<UserRegisterStatusScreen> createState() => _UserRegisterStatusScreenState();
+  State<UserRegisterStatusScreen> createState() =>
+      _UserRegisterStatusScreenState();
 }
 
 class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
@@ -34,7 +36,13 @@ class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
   @override
   Widget build(BuildContext context) {
     if (registerData == null) {
-      return CircularProgressIndicator();
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(PRIMARY_COLOR),
+          ),
+        ),
+      );
     } else {
       return Scaffold(
         appBar: CustomAppBar(
@@ -52,7 +60,8 @@ class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
                 description: '승인까지 1~2일 정도 소요될 수 있습니다.',
               ),
               const SizedBox(height: 30),
-              _registerInfo('목표 기상 시간',
+              _registerInfo(
+                  '목표 기상 시간',
                   _getTargetWakeUpTimeString(registerData!.targetWakeUpTime),
                   false),
               const SizedBox(height: 30),
@@ -66,7 +75,11 @@ class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
               CustomElevatedButton(
                 text: '수정하기',
                 onPressed: () {
-                  Navigator.pushNamed(context, '/register');
+                  Navigator.pushNamed(
+                    context,
+                    '/register',
+                    arguments: registerData,
+                  );
                 },
               )
             ],
@@ -76,7 +89,7 @@ class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
     }
   }
 
-  String _getTargetWakeUpTimeString(DateTime targetWakeUpTime) {
+  String _getTargetWakeUpTimeString(TargetWakeUpTimeModel targetWakeUpTime) {
     final hour = targetWakeUpTime.hour;
     final minute = targetWakeUpTime.minute;
 
