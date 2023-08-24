@@ -34,16 +34,25 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(context: context),
+      appBar: CustomAppBar(
+        context: context,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          color: Colors.black,
+          alignment: Alignment.centerLeft,
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const CustomTitle(
-              title: '로그인'
-            ),
+            const CustomTitle(title: '로그인'),
             SizedBox.fromSize(size: const Size(0, 30)),
             CustomTextFormField(
               textController: phoneNumberController,
@@ -66,7 +75,6 @@ class _LoginScreenState extends State<LoginScreen> {
               isValidatorOn: isValidatorOn,
             ),
             SizedBox.fromSize(size: const Size(0, 30)),
-
             CustomPasswordTextFormField(
               textController: passwordController,
               placeHolder: '비밀번호',
@@ -83,7 +91,6 @@ class _LoginScreenState extends State<LoginScreen> {
               },
             ),
             SizedBox.fromSize(size: const Size(0, 30)),
-
             CustomElevatedButton(
               text: '로그인',
               // isDisabled: checkIfButtonDisabled(),
@@ -93,63 +100,57 @@ class _LoginScreenState extends State<LoginScreen> {
                 });
 
                 bool isFormValid = validateForms(
-                  phoneNumberController.text,
-                  passwordController.text
-                );
+                    phoneNumberController.text, passwordController.text);
 
                 if (!isFormValid) {
                   setState(() {
                     isValidatorOn = true;
                   });
                 } else {
-                    // TODO
-                    LoginRequest loginRequest = LoginRequest(
-                        phoneNumber: phoneNumberController.text,
-                        password: passwordController.text);
-                    final response = await authRepository.login(loginRequest);
+                  // TODO
+                  LoginRequest loginRequest = LoginRequest(
+                      phoneNumber: phoneNumberController.text,
+                      password: passwordController.text);
+                  final response = await authRepository.login(loginRequest);
+                  if (response is String) {
+                    print(response);
+                  } else {
+                    // Success
+                    // TODO : User 상태에 따라 Redirect 다르게 해야함.
+                    final response = await authRepository.getUserStatus();
                     if (response is String) {
-                      print(response);
-                    } else{
-                      // Success
-                      // TODO : User 상태에 따라 Redirect 다르게 해야함.
-                      final response = await authRepository.getUserStatus();
-                      if(response is String){
+                    } else {
+                      GetUserStatusResponse res =
+                          response as GetUserStatusResponse;
+                      UserStatusEnum userStatus = res.userStatus;
 
-                      } else {
-                        GetUserStatusResponse res = response as GetUserStatusResponse;
-                        UserStatusEnum userStatus = res.userStatus;
-
-                        if(userStatus == UserStatusEnum.INITIAL){
-                          // 신청 X -> register screen
-                          Navigator.pushNamed(context, '/user/status/initial');
-                        } else if(userStatus == UserStatusEnum.REQUEST){
-                          Navigator.pushNamed(context, '/user/status/register');
-                        } else if(userStatus == UserStatusEnum.ACCEPT){
-                          // Navigator.pushNamed(context, '/home')
-                        } else if(userStatus == UserStatusEnum.REJECT){
-                          print(res.rejectReason);
-                          print(res.userStatus);
-                          Navigator.pushNamed(context, '/user/status/reject',
-                              arguments: res.rejectReason);
-                        }
-
+                      if (userStatus == UserStatusEnum.INITIAL) {
+                        // 신청 X -> register screen
+                        Navigator.pushNamed(context, '/user/status/initial');
+                      } else if (userStatus == UserStatusEnum.REQUEST) {
+                        Navigator.pushNamed(context, '/user/status/register');
+                      } else if (userStatus == UserStatusEnum.ACCEPT) {
+                        // Navigator.pushNamed(context, '/home')
+                      } else if (userStatus == UserStatusEnum.REJECT) {
+                        print(res.rejectReason);
+                        print(res.userStatus);
+                        Navigator.pushNamed(context, '/user/status/reject',
+                            arguments: res.rejectReason);
                       }
-
-                      // 신청 O ->
                     }
 
+                    // 신청 O ->
+                  }
                 }
               },
             )
-
           ],
         ),
       ),
     );
   }
 
-  bool validateForms(
-      String phoneNumber, String password) {
+  bool validateForms(String phoneNumber, String password) {
     if (phoneNumber.isEmpty || password.isEmpty) return false;
 
     if (phoneNumber.length != 13) return false;
