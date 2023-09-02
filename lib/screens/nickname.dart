@@ -30,7 +30,18 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(context: context),
+      appBar: CustomAppBar(
+        context: context,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new),
+          color: Colors.black,
+          alignment: Alignment.centerLeft,
+          padding: EdgeInsets.zero,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: SafeArea(
         child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -71,7 +82,8 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
                                   style: TextButton.styleFrom(
                                     minimumSize: Size.zero,
                                     padding: EdgeInsets.zero,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                     foregroundColor: BACKGROUND_COLOR,
                                   ),
                                   child: Text(
@@ -89,7 +101,8 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
                                   style: TextButton.styleFrom(
                                     minimumSize: Size.zero,
                                     padding: EdgeInsets.zero,
-                                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                    tapTargetSize:
+                                        MaterialTapTargetSize.shrinkWrap,
                                     foregroundColor: BACKGROUND_COLOR,
                                   ),
                                   child: const Text(
@@ -152,7 +165,7 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
                         columns: 7,
                         emojiSizeMax: 28 *
                             (foundation.defaultTargetPlatform ==
-                                TargetPlatform.iOS
+                                    TargetPlatform.iOS
                                 ? 1.30
                                 : 1.0),
                         verticalSpacing: 0,

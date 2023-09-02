@@ -47,7 +47,7 @@ class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
       return Scaffold(
         appBar: CustomAppBar(
           context: context,
-          hasLeadingIcon: false,
+          leading: null,
         ),
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),

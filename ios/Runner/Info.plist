@@ -47,5 +47,7 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+    <string>카메라를 켜고 당신의 아침을 인증해보세요!</string>
 </dict>
 </plist>
