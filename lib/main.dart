@@ -1,7 +1,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/provider/diary_home_state.dart';
 import 'package:morning_holic_app/provider/register_state.dart';
+import 'package:morning_holic_app/screens/diary_home.dart';
 import 'package:morning_holic_app/screens/login.dart';
 import 'package:morning_holic_app/screens/nickname.dart';
 import 'package:morning_holic_app/screens/register.dart';
@@ -27,27 +29,33 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        scaffoldBackgroundColor: BACKGROUND_COLOR,
-        fontFamily: 'AppleSDGothicNeo',
-      ),
-      initialRoute: '/welcome',
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => DiaryHomeState()),
+      ],
+      child: MaterialApp(
+        theme: ThemeData(
+          scaffoldBackgroundColor: BACKGROUND_COLOR,
+          fontFamily: 'AppleSDGothicNeo',
+        ),
+        initialRoute: '/diary/home',
 
-      routes: {
-        '/welcome':(context) => WelcomeScreen(),
-        '/sign-up':(context) => SignUpScreen(),
-        '/nickname-setting':(context) => NicknameSettingScreen(),
-        '/register':(context) => RegisterScreen(),
-        '/register/complete':(context) => RegisterCompleteScreen(),
-        '/user/status/initial':(context) => UserInitialStatusScreen(),
-        '/user/status/register':(context) => UserRegisterStatusScreen(),
-        '/login':(context) => LoginScreen(),
-        '/user/status/reject':(context) => UserRejectStatusScreen(),
-        // '/home': (context) => HomeScreen(),
-        // '/createProfile' :(context) => CreateProfileScreen(),
-        // '/searchDetails' : (context) => SearchDetailsScreen(),
-      },
+        routes: {
+          '/welcome':(context) => WelcomeScreen(),
+          '/sign-up':(context) => SignUpScreen(),
+          '/nickname-setting':(context) => NicknameSettingScreen(),
+          '/register':(context) => RegisterScreen(),
+          '/register/complete':(context) => RegisterCompleteScreen(),
+          '/user/status/initial':(context) => UserInitialStatusScreen(),
+          '/user/status/register':(context) => UserRegisterStatusScreen(),
+          '/login':(context) => LoginScreen(),
+          '/user/status/reject':(context) => UserRejectStatusScreen(),
+          '/diary/home':(context) => DiaryHomeScreen(),
+          // '/home': (context) => HomeScreen(),
+          // '/createProfile' :(context) => CreateProfileScreen(),
+          // '/searchDetails' : (context) => SearchDetailsScreen(),
+        },
+      ),
     );
   }
 }
