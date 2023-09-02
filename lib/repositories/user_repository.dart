@@ -1,6 +1,7 @@
 
 import 'package:dio/dio.dart';
 import 'package:morning_holic_app/clients/dio_client.dart';
+import 'package:morning_holic_app/payloads/response/user_info_response.dart';
 
 import '../payloads/request/login_request.dart';
 import '../payloads/request/register_request.dart';
@@ -12,6 +13,15 @@ class UserRepository{
 
   UserRepository(){
     _dioClient = DioClient();
+  }
+
+  Future<UserInfoResponse> getUserInfo() async {
+    try {
+      final response = await _dioClient.dio.get('/user/info');
+      return UserInfoResponse.fromJson(response.data);
+    } on DioException catch (e) {
+      rethrow;
+    }
   }
 
   Future<RegisterResponse> getRegisterData() async {

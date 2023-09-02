@@ -49,6 +49,8 @@ dependencies:
   intl: ^0.18.1
   permission_handler: ^10.4.3
   fluttertoast: ^8.2.2
+  flutter_native_splash: ^2.3.2
+  animated_splash_screen: ^1.3.0
 
 dev_dependencies:
   flutter_test:

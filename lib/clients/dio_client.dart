@@ -13,6 +13,7 @@ class DioClient {
   factory DioClient() => _instance;
 
   Dio get dio => _dio;
+
   Dio get dioWithoutAccessToken => _dioWithoutAccessToken;
 
   var options = BaseOptions(
@@ -26,7 +27,7 @@ class DioClient {
     _dio = Dio(options);
 
     _dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (RequestOptions options, RequestInterceptorHandler handler) async {
+      onRequest: (options, handler) async {
         String? accessToken = await _getAccessToken();
         if (accessToken != null) {
           options.headers["Authorization"] = "Bearer $accessToken";
@@ -58,7 +59,7 @@ class DioClient {
           );
         }
         return handler.next(error);
-      }
+      },
     ));
   }
 
@@ -72,6 +73,7 @@ class DioClient {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('accessToken');
   }
+
   _setAccessToken(String accessToken) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setString('accessToken', accessToken);
@@ -80,6 +82,7 @@ class DioClient {
   _getRefreshToken() async {
     return await _storage.read(key: 'refreshToken');
   }
+
   _setRefreshToken(String refreshToken) async {
     await _storage.write(key: 'accessToken', value: refreshToken);
   }
@@ -88,26 +91,26 @@ class DioClient {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('accessToken');
   }
+
   _setUserId(int userId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.setInt('userId', userId);
   }
 
   Future<bool> refreshAccessToken() async {
-    final response = await _dio.post(
-      '/auth/refresh',
-      data: {
-        'refreshToken': _getRefreshToken()
-      }
-    );
+    String? refreshToken = await _getRefreshToken();
+    if (refreshToken != null) {
+      final response = await _dio.post(
+          '/auth/refresh', data: {'refreshToken': refreshToken});
 
-    if (response.statusCode == 200) {
-      await _setAccessToken(response.data['accessToken']);
-      await _setRefreshToken(response.data['refreshToken']);
-      return true;
-    } else {
-      return false;
+      if (response.statusCode == 200) {
+        await _setAccessToken(response.data['accessToken']);
+        await _setRefreshToken(response.data['refreshToken']);
+        return true;
+      }
     }
+
+    return false;
   }
 
   Options _getOptionsFromRequestOptions(RequestOptions requestOptions) {
