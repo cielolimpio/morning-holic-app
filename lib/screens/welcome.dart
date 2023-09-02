@@ -6,16 +6,22 @@ class WelcomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _morningHolicLogo,
-            _WelcomeButtons(),
-          ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 30.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Hero(
+                tag: "morning holic",
+                child: _morningHolicLogo,
+              ),
+              _WelcomeButtons(),
+            ],
+          ),
         ),
       ),
     );
@@ -54,8 +60,7 @@ class _WelcomeButtons extends StatelessWidget {
             style: TextStyle(
                 color: Colors.black,
                 decoration: TextDecoration.underline,
-                fontSize: 16.0
-            ),
+                fontSize: 16.0),
           ),
         )
       ],

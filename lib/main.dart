@@ -10,6 +10,7 @@ import 'package:morning_holic_app/screens/photo_preview_screen.dart';
 import 'package:morning_holic_app/screens/register.dart';
 import 'package:morning_holic_app/screens/register_complete.dart';
 import 'package:morning_holic_app/screens/sign_up.dart';
+import 'package:morning_holic_app/screens/splash_screen.dart';
 import 'package:morning_holic_app/screens/user_initial_status.dart';
 import 'package:morning_holic_app/screens/user_register_status.dart';
 import 'package:morning_holic_app/screens/user_reject_status.dart';
@@ -39,8 +40,9 @@ class MyApp extends StatelessWidget {
             scaffoldBackgroundColor: BACKGROUND_COLOR,
             fontFamily: 'AppleSDGothicNeo',
           ),
-          initialRoute: '/diary/home',
+          initialRoute: '/splash',
           routes: {
+            '/splash':(context) => SplashScreen(),
             '/welcome': (context) => WelcomeScreen(),
             '/sign-up': (context) => SignUpScreen(),
             '/nickname-setting': (context) => NicknameSettingScreen(),
