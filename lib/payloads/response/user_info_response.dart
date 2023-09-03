@@ -1,8 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:morning_holic_app/dtos/target_wake_up_time_model.dart';
-import 'package:morning_holic_app/enums/BankEnum.dart';
-import 'package:morning_holic_app/enums/ModeEnum.dart';
-import 'package:morning_holic_app/enums/UserStatusEnum.dart';
+import 'package:morning_holic_app/enums/bank_enum.dart';
+import 'package:morning_holic_app/enums/mode_enum.dart';
+import 'package:morning_holic_app/enums/user_status_enum.dart';
 
 part 'user_info_response.g.dart';
 

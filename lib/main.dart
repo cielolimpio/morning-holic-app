@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/enums/diary_image_type_enum.dart';
 import 'package:morning_holic_app/provider/diary_home_state.dart';
 import 'package:morning_holic_app/provider/register_state.dart';
 import 'package:morning_holic_app/screens/camera_screen.dart';
@@ -7,6 +8,7 @@ import 'package:morning_holic_app/screens/diary_home.dart';
 import 'package:morning_holic_app/screens/login.dart';
 import 'package:morning_holic_app/screens/nickname.dart';
 import 'package:morning_holic_app/screens/photo_preview_screen.dart';
+import 'package:morning_holic_app/screens/photo_view_screen.dart';
 import 'package:morning_holic_app/screens/register.dart';
 import 'package:morning_holic_app/screens/register_complete.dart';
 import 'package:morning_holic_app/screens/sign_up.dart';
@@ -40,7 +42,7 @@ class MyApp extends StatelessWidget {
             scaffoldBackgroundColor: BACKGROUND_COLOR,
             fontFamily: 'AppleSDGothicNeo',
           ),
-          initialRoute: '/splash',
+          initialRoute: '/diary/home',
           routes: {
             '/splash':(context) => SplashScreen(),
             '/welcome': (context) => WelcomeScreen(),
@@ -58,6 +60,7 @@ class MyApp extends StatelessWidget {
                   cameraImageModel: ModalRoute.of(context)?.settings.arguments
                       as CameraImageModel,
                 ),
+            '/photo/view': (context) => PhotoViewScreen(imagePath: ModalRoute.of(context)?.settings.arguments as String),
             // '/home': (context) => HomeScreen(),
             // '/createProfile' :(context) => CreateProfileScreen(),
             // '/searchDetails' : (context) => SearchDetailsScreen(),

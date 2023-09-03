@@ -8,7 +8,7 @@ enum UserStatusEnum {
 
   final String value;
 
-  factory UserStatusEnum.getByDisplayName(String value){
+  factory UserStatusEnum.getByValue(String value){
     return UserStatusEnum.values.firstWhere((it) => it.value == value);
   }
 }

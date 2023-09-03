@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:morning_holic_app/enums/ModeEnum.dart';
+import 'package:morning_holic_app/enums/mode_enum.dart';
 
-import '../enums/BankEnum.dart';
+import '../enums/bank_enum.dart';
 
 class RegisterState extends ChangeNotifier{
   String? targetWakeUpTime;
