@@ -96,8 +96,11 @@ class _CameraScreenState extends State<CameraScreen> {
       );
 
       await cameraControllers[0]!.initialize();
+      cameraControllers[0]!.setFlashMode(FlashMode.off);
 
-      _isCameraReady = true;
+      setState(() {
+        _isCameraReady = true;
+      });
       _updateTime();
       _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
         _updateTime();
@@ -168,6 +171,7 @@ class _CameraScreenState extends State<CameraScreen> {
           Navigator.pop(context);
         },
       ),
+      leadingWidth: 50.0,
       title: '기상 인증',
       centerTitle: true,
     );
@@ -188,7 +192,7 @@ class _CameraScreenState extends State<CameraScreen> {
                         cameraControllers[_currentCameraIndex]!,
                       )
                     : Container(
-                        color: Colors.grey,
+                        color: BACKGROUND_COLOR,
                       ),
               ),
             ),
@@ -328,17 +332,33 @@ class _CameraScreenState extends State<CameraScreen> {
     if (!_isCameraReady) {
       return;
     } else {
+      setState(() {
+        _isCameraReady = false;
+      });
       final cameraIndexToChange = (_currentCameraIndex + 1) % 2;
+
+      final cameras = await availableCameras();
+      CameraLensDirection cameraLensDirection = cameraIndexToChange == 0
+          ? CameraLensDirection.back
+          : CameraLensDirection.front;
+      var camera = cameras.firstWhere((element) => element.lensDirection == cameraLensDirection);
+
+      cameraControllers[cameraIndexToChange] = CameraController(
+        camera,
+        ResolutionPreset.max,
+        imageFormatGroup: ImageFormatGroup.bgra8888,
+        enableAudio: false,
+      );
       await cameraControllers[cameraIndexToChange]!.initialize();
 
       setState(() {
-        if (_isFlashOn) {
-          cameraControllers[_currentCameraIndex]!.setFlashMode(FlashMode.off);
-          if (cameraIndexToChange == 0) {
-            cameraControllers[cameraIndexToChange]!.setFlashMode(FlashMode.torch);
-          }
+        if (_isFlashOn && cameraIndexToChange == 0) {
+          cameraControllers[cameraIndexToChange]!.setFlashMode(FlashMode.torch);
+        } else {
+          cameraControllers[cameraIndexToChange]!.setFlashMode(FlashMode.off);
         }
         _currentCameraIndex = cameraIndexToChange;
+        _isCameraReady = true;
       });
     }
   }

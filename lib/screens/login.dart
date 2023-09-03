@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:morning_holic_app/enums/UserStatusEnum.dart';
+import 'package:morning_holic_app/enums/user_status_enum.dart';
 import 'package:morning_holic_app/payloads/request/login_request.dart';
 import 'package:morning_holic_app/payloads/response/get_user_status_response.dart';
 import 'package:morning_holic_app/repositories/auth_repository.dart';

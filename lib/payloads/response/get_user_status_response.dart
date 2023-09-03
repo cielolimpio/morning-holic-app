@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:morning_holic_app/enums/UserStatusEnum.dart';
+import 'package:morning_holic_app/enums/user_status_enum.dart';
 
 part 'get_user_status_response.g.dart';
 

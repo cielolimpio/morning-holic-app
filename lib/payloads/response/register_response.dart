@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:morning_holic_app/dtos/target_wake_up_time_model.dart';
-import 'package:morning_holic_app/enums/ModeEnum.dart';
+import 'package:morning_holic_app/enums/mode_enum.dart';
 
 part 'register_response.g.dart';
 

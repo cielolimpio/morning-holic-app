@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:morning_holic_app/enums/DiaryTypeEnum.dart';
+import 'package:morning_holic_app/enums/diary_image_type_enum.dart';
+import 'package:morning_holic_app/enums/diary_type_enum.dart';
 
 class DiaryHomeState extends ChangeNotifier{
   DiaryTypeEnum diaryType = DiaryTypeEnum.INDOOR;
+  DiaryImageTypeEnum diaryImageType = DiaryImageTypeEnum.WAKE_UP;
   String? wakeupImage = "c://jpg";
   String? routineStartImage;
   String? routineEndImage;
@@ -10,6 +12,11 @@ class DiaryHomeState extends ChangeNotifier{
 
   void updateDiaryType(DiaryTypeEnum diaryType){
     this.diaryType = diaryType;
+    notifyListeners();
+  }
+
+  void updateDiaryImageType(DiaryImageTypeEnum diaryImageType){
+    this.diaryImageType = diaryImageType;
     notifyListeners();
   }
 
