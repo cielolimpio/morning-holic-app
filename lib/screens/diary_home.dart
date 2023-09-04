@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/components/app_bar.dart';
 import 'package:morning_holic_app/components/toggle_button.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/dtos/diary_image_model.dart';
 import 'package:morning_holic_app/enums/diary_image_type_enum.dart';
 import 'package:morning_holic_app/enums/diary_type_enum.dart';
+import 'package:morning_holic_app/provider/user_info_state.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -17,6 +21,72 @@ class DiaryHomeScreen extends StatefulWidget {
 }
 
 class _DiaryHomeState extends State<DiaryHomeScreen> {
+  late String _formattedTime;
+  int minusScore = 0;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _updateTime();
+    Timer.periodic(Duration(milliseconds: 10), (timer) {
+      _updateTime();
+    });
+  }
+
+  _updateTime() {
+    final now = DateTime.now()
+        .toUtc()
+        .add(const Duration(hours: 9)); // Asia/Seoul UTC+9
+
+    final userInfoState = Provider.of<UserInfoState>(context, listen: false);
+    final diaryHomeState = Provider.of<DiaryHomeState>(context, listen: false);
+
+    List<Duration> durationsToAdd =
+        diaryHomeState.getDurationToAddToTargetTime();
+
+    var targetTime = DateTime(
+            now.year,
+            now.month,
+            now.day,
+            userInfoState.targetWakeUpTime!.hour,
+            userInfoState.targetWakeUpTime!.minute)
+        .toUtc()
+        .add(const Duration(hours: 17))
+        .add(durationsToAdd[0]);
+
+    if (targetTime.isBefore(now)) {
+      targetTime =
+          targetTime.subtract(durationsToAdd[0]).add(durationsToAdd[1]);
+      minusScore = 1;
+      if (targetTime.isBefore(now)) {
+        if (diaryHomeState.wakeUpImage == null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            diaryHomeState.updateWakeupImage(DiaryImageModel(
+              imagePath: null,
+              minusScore: 2,
+              dateTime: null,
+            ));
+            minusScore = 0;
+          });
+        } else {
+          minusScore = 2;
+        }
+      }
+    }
+
+    Duration difference = targetTime.difference(now);
+
+    final hours = difference.inHours;
+    final minutes = difference.inMinutes - (hours * 60);
+    final seconds = difference.inSeconds - (difference.inMinutes * 60);
+
+    setState(() {
+      _formattedTime =
+          '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,10 +96,7 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
         child: Column(
           children: [
             const SizedBox(height: 15),
-            Text(
-              "[루틴] 성공까지 남은 시간 : 00 : 21 : 49",
-              style: TextStyle(fontSize: 18),
-            ),
+            _getTimer(),
             const SizedBox(height: 15),
             // TODO : 실내, 야외 선택 버튼
             _customToggleButton,
@@ -68,6 +135,62 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
     );
   }
 
+  Widget _getTimer() {
+    return Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
+      String type;
+      if (diaryHomeState.wakeUpImage == null) {
+        type = '기상';
+      } else {
+        type = '루틴';
+      }
+      switch (minusScore) {
+        case 0:
+          return getTimerString(target: "[$type] 성공", time: _formattedTime);
+        case 1:
+          return getTimerString(target: "[$type] -1", time: _formattedTime);
+        case 2:
+          return getTimerString(target: "[$type] -1", time: "00:00:00");
+        default:
+          return Text("실패");
+      }
+    });
+  }
+
+  Row getTimerString({
+    required String target,
+    required String time,
+  }) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Text(
+          target,
+          style: TextStyle(
+            fontFamily: 'RobotoMono',
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        Text(
+          "까지 남은 시간 : ",
+          style: TextStyle(
+            fontFamily: 'RobotoMono',
+            fontSize: 18,
+          ),
+        ),
+        Text(
+          time,
+          style: TextStyle(
+            fontFamily: 'RobotoMono',
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+            color: Colors.red,
+          ),
+        ),
+      ],
+    );
+  }
+
   final Widget _customToggleButton = CustomToggleButton(
     contents: const <Widget>[
       Text(
@@ -90,94 +213,102 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
 
   Widget _getDiaryRow({
     required DiaryImageTypeEnum diaryImageType,
-    required bool isChecked,
     required String text,
-    required bool isAlreadyTaken,
-    required bool isBlack,
   }) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            _getCheckButton(isChecked: isChecked),
-            _getDiaryText(text),
-            const Spacer(),
-            _getCameraIconButton(
-              diaryImageType: diaryImageType,
-              isAlreadyTaken: isAlreadyTaken,
-              isBlack: isBlack,
-            ),
-          ],
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8.0),
-          child: Divider(thickness: 1, color: GREY_COLOR, height: 0),
-        ),
-        const SizedBox(height: 15),
-      ],
-    );
+    return Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
+      DiaryImageModel? diaryImageModel;
+      switch (diaryImageType) {
+        case DiaryImageTypeEnum.WAKE_UP:
+          diaryImageModel = diaryHomeState.wakeUpImage;
+        case DiaryImageTypeEnum.ROUTINE_START:
+          diaryImageModel = diaryHomeState.routineStartImage;
+        case DiaryImageTypeEnum.ROUTINE_END:
+          diaryImageModel = diaryHomeState.routineEndImage;
+        case DiaryImageTypeEnum.ROUTINE:
+          diaryImageModel = diaryHomeState.routineImage;
+      }
+
+      bool? isChecked;
+      if (diaryImageModel == null) {
+        isChecked = null;
+      } else if (diaryImageModel.imagePath == null) {
+        isChecked = false;
+      } else {
+        isChecked = true;
+      }
+
+      return Column(
+        children: [
+          Row(
+            children: [
+              _getCheckButton(isChecked: isChecked),
+              _getDiaryText(text),
+              const Spacer(),
+              _getCameraIconButton(
+                diaryImageType: diaryImageType,
+                isAlreadyTaken: isChecked != null,
+                isBlack: isChecked != false,
+              ),
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 8.0),
+            child: Divider(thickness: 1, color: GREY_COLOR, height: 0),
+          ),
+          const SizedBox(height: 15),
+        ],
+      );
+    });
   }
 
   Widget _getWakeUpRow() {
-    return Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
-      return _getDiaryRow(
-        diaryImageType: DiaryImageTypeEnum.WAKE_UP,
-        isChecked: diaryHomeState.wakeupImage != null,
-        text: "기상 인증",
-        isAlreadyTaken: diaryHomeState.wakeupImage != null,
-        isBlack: true,
-      );
-    });
+    return _getDiaryRow(
+      diaryImageType: DiaryImageTypeEnum.WAKE_UP,
+      text: "기상 인증",
+    );
   }
 
   Column _getIndoorRoutineColumn() {
     return Column(
       children: [
-        Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
-          return _getDiaryRow(
-            diaryImageType: DiaryImageTypeEnum.ROUTINE_START,
-            isChecked: diaryHomeState.routineStartImage != null,
-            text: "루틴 시작 인증",
-            isAlreadyTaken: diaryHomeState.routineStartImage != null,
-            isBlack: diaryHomeState.wakeupImage != null,
-          );
-        }),
-
-        // 루틴 끝 인증 ROW
-        Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
-          return _getDiaryRow(
-            diaryImageType: DiaryImageTypeEnum.ROUTINE_END,
-            isChecked: diaryHomeState.routineEndImage != null,
-            text: "루틴 끝 인증",
-            isAlreadyTaken: diaryHomeState.routineEndImage != null,
-            isBlack: diaryHomeState.routineStartImage != null,
-          );
-        }),
+        _getDiaryRow(
+          diaryImageType: DiaryImageTypeEnum.ROUTINE_START,
+          text: "루틴 시작 인증",
+        ),
+        _getDiaryRow(
+          diaryImageType: DiaryImageTypeEnum.ROUTINE_END,
+          text: "루틴 끝 인증",
+        ),
       ],
     );
   }
 
-  Column _getOutdoorRoutineColumn() {
-    return Column(
-      children: [
-        Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
-          return _getDiaryRow(
-            diaryImageType: DiaryImageTypeEnum.ROUTINE,
-            isChecked: diaryHomeState.routineImage != null,
-            text: "루틴 인증",
-            isAlreadyTaken: diaryHomeState.routineImage != null,
-            isBlack: diaryHomeState.wakeupImage != null,
-          );
-        }),
-      ],
+  Widget _getOutdoorRoutineColumn() {
+    return _getDiaryRow(
+      diaryImageType: DiaryImageTypeEnum.ROUTINE,
+      text: "루틴 인증",
     );
   }
 
-  IconButton _getCheckButton({required bool isChecked}) {
+  IconButton _getCheckButton({required bool? isChecked}) {
+    IconData icon;
+    Color color;
+
+    if (isChecked == null) {
+      icon = Icons.check_circle;
+      color = GREY_COLOR;
+    } else if (isChecked) {
+      icon = Icons.check_circle;
+      color = PRIMARY_COLOR;
+    } else {
+      icon = Icons.highlight_remove_outlined;
+      color = Colors.red;
+    }
+
     return IconButton(
       onPressed: () {},
-      icon: const Icon(Icons.check_circle),
-      color: isChecked ? PRIMARY_COLOR : GREY_COLOR,
+      icon: Icon(icon),
+      color: color,
       iconSize: 30.0,
     );
   }
@@ -201,7 +332,9 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
     return Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
       return IconButton(
         onPressed: () async {
-          if (!isAlreadyTaken && isBlack) {
+          if (isAlreadyTaken && !isBlack) {
+            return;
+          } else if (!isAlreadyTaken && isBlack) {
             diaryHomeState.updateDiaryImageType(diaryImageType);
             Navigator.pushNamed(
               context,

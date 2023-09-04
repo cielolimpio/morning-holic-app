@@ -9,7 +9,9 @@ import 'package:flutter/rendering.dart';
 import 'package:morning_holic_app/components/app_bar.dart';
 import 'package:morning_holic_app/constants/color.dart';
 import 'package:morning_holic_app/dtos/camera_image_model.dart';
+import 'package:morning_holic_app/dtos/diary_image_model.dart';
 import 'package:morning_holic_app/enums/diary_image_type_enum.dart';
+import 'package:morning_holic_app/provider/user_info_state.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -90,7 +92,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
               bottom: 45.0,
               left: 25.0,
               child: Text(
-                widget.cameraImageModel.datetime,
+                widget.cameraImageModel.formattedDatetime,
                 style: const TextStyle(
                   color: Colors.white,
                   fontFamily: 'RobotoMono',
@@ -138,16 +140,23 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
 
                   CachedNetworkImageProvider(processedImgPath);
                   SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString(diaryHomeState.diaryImageType.value, processedImgPath);
-                  switch (diaryHomeState.diaryImageType) {
+                  prefs.setString(diaryHomeState.currentDiaryImageType.value, processedImgPath);
+
+                  final diaryImageModel = DiaryImageModel(
+                    imagePath: processedImgPath,
+                    minusScore: _getMinusScore(), // TODO
+                    dateTime: widget.cameraImageModel.datetime,
+                  );
+
+                  switch (diaryHomeState.currentDiaryImageType) {
                     case DiaryImageTypeEnum.WAKE_UP:
-                      diaryHomeState.updateWakeupImage(processedImgPath);
+                      diaryHomeState.updateWakeupImage(diaryImageModel);
                     case DiaryImageTypeEnum.ROUTINE_START:
-                      diaryHomeState.updateRoutineStartImage(processedImgPath);
+                      diaryHomeState.updateRoutineStartImage(diaryImageModel);
                     case DiaryImageTypeEnum.ROUTINE_END:
-                      diaryHomeState.updateRoutineEndImage(processedImgPath);
+                      diaryHomeState.updateRoutineEndImage(diaryImageModel);
                     case DiaryImageTypeEnum.ROUTINE:
-                      diaryHomeState.updateRoutineImage(processedImgPath);
+                      diaryHomeState.updateRoutineImage(diaryImageModel);
                   }
                 }
                 Navigator.popUntil(context, ModalRoute.withName('/diary/home'));
@@ -174,5 +183,33 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
         ),
       ),
     );
+  }
+
+  int _getMinusScore() {
+    final userInfoState = Provider.of<UserInfoState>(context, listen: false);
+    final diaryHomeState = Provider.of<DiaryHomeState>(context, listen: false);
+
+    List<Duration> durationsToAdd = diaryHomeState.getDurationToAddToTargetTime();
+    DateTime datetime = widget.cameraImageModel.datetime;
+
+    var targetTime = DateTime(datetime.year, datetime.month, datetime.day,
+        userInfoState.targetWakeUpTime!.hour, userInfoState.targetWakeUpTime!.minute)
+        .toUtc()
+        .add(const Duration(hours: 9))
+        .add(durationsToAdd[0]);
+
+    if (targetTime.isBefore(datetime)) {
+      targetTime = targetTime
+          .subtract(durationsToAdd[0])
+          .add(durationsToAdd[1]);
+
+      if (targetTime.isBefore(datetime)) {
+        return 2;
+      } else {
+        return 1;
+      }
+    } else {
+      return 0;
+    }
   }
 }

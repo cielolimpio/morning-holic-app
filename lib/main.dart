@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/constants/color.dart';
-import 'package:morning_holic_app/enums/diary_image_type_enum.dart';
 import 'package:morning_holic_app/provider/diary_home_state.dart';
 import 'package:morning_holic_app/provider/register_state.dart';
+import 'package:morning_holic_app/provider/user_info_state.dart';
 import 'package:morning_holic_app/screens/camera_screen.dart';
 import 'package:morning_holic_app/screens/diary_home.dart';
 import 'package:morning_holic_app/screens/login.dart';
@@ -23,7 +23,7 @@ import 'dtos/camera_image_model.dart';
 
 void main() {
   runApp(ChangeNotifierProvider(
-    create: (context) => RegisterState(),
+    create: (context) => UserInfoState(),
     child: MyApp(),
   ));
 }
@@ -35,14 +35,15 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
         providers: [
-          ChangeNotifierProvider(create: (context) => DiaryHomeState()),
+          ChangeNotifierProvider(create: (context) => RegisterState()),
+          ChangeNotifierProvider(create: (context) => DiaryHomeState())
         ],
         child: MaterialApp(
           theme: ThemeData(
             scaffoldBackgroundColor: BACKGROUND_COLOR,
             fontFamily: 'AppleSDGothicNeo',
           ),
-          initialRoute: '/diary/home',
+          initialRoute: '/splash',
           routes: {
             '/splash':(context) => SplashScreen(),
             '/welcome': (context) => WelcomeScreen(),

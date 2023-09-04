@@ -2,8 +2,11 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:morning_holic_app/enums/user_status_enum.dart';
 import 'package:morning_holic_app/payloads/response/user_info_response.dart';
+import 'package:morning_holic_app/provider/user_info_state.dart';
 import 'package:morning_holic_app/repositories/user_repository.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -38,30 +41,55 @@ class _SplashScreenState extends State<SplashScreen>
       setState(() {});
     });
 
-    getUserInfoAndCheckValidation().then((isValid) {
+    getUserInfoAndGetRouteName().then((routeName) {
       // TODO: user info가 valid한지에 따라 다른 페이지로 가도록 Handling
-      Timer(Duration(milliseconds: 1000), () {
-        _animationController.forward();
-        Timer(Duration(milliseconds: 500), () {
-          Navigator.pushNamed(
-            context,
-            '/welcome',
-          );
+      if (routeName == '/welcome') {
+        Timer(Duration(milliseconds: 1000), () {
+          _animationController.forward();
+          Timer(Duration(milliseconds: 500), () {
+            Navigator.pushNamed(context, '/welcome');
+          });
         });
-      });
+      } else {
+        Navigator.pushNamed(context, routeName);
+      }
     });
   }
 
-  Future<bool> getUserInfoAndCheckValidation() async {
+  Future<String> getUserInfoAndGetRouteName() async {
     String? accessToken = await _getAccessToken();
     if (accessToken == null) {
-      return false;
+      return '/welcome';
     } else {
       try {
         UserInfoResponse userInfo = await userRepository.getUserInfo();
-        return true;
+
+        final userInfoState = Provider.of<UserInfoState>(context, listen: false);
+        userInfoState.updateUserInfo(
+          userId: userInfo.userId,
+          name: userInfo.name,
+          phoneNumber: userInfo.phoneNumber,
+          nickname: userInfo.nickname,
+          targetWakeUpTime: userInfo.targetWakeUpTime,
+          refundBankName: userInfo.refundBankName,
+          refundAccount: userInfo.refundAccount,
+          mode: userInfo.mode,
+          status: userInfo.status,
+          rejectReason: userInfo.rejectReason,
+        );
+
+        switch (userInfo.status) {
+          case UserStatusEnum.INITIAL:
+            return '/user/status/initial';
+          case UserStatusEnum.REQUEST:
+            return '/user/status/register';
+          case UserStatusEnum.ACCEPT:
+            return '/diary/home'; // TODO: home으로 바꿔야함.
+          case UserStatusEnum.REJECT:
+            return '/user/status/reject';
+        }
       } on DioException catch (e) {
-        return false;
+        return '/welcome';
       }
     }
   }

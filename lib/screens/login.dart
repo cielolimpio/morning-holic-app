@@ -1,10 +1,15 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:morning_holic_app/enums/user_status_enum.dart';
 import 'package:morning_holic_app/payloads/request/login_request.dart';
 import 'package:morning_holic_app/payloads/response/get_user_status_response.dart';
+import 'package:morning_holic_app/payloads/response/user_info_response.dart';
+import 'package:morning_holic_app/provider/user_info_state.dart';
 import 'package:morning_holic_app/repositories/auth_repository.dart';
+import 'package:morning_holic_app/repositories/user_repository.dart';
 import 'package:morning_holic_app/screens/sign_up.dart';
+import 'package:provider/provider.dart';
 
 import '../components/app_bar.dart';
 import '../components/elevated_button.dart';
@@ -27,6 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isPhoneNumberDuplicated = false;
   String duplicatedPhoneNumber = '';
   AuthRepository authRepository = AuthRepository();
+  UserRepository userRepository = UserRepository();
 
   final numberRegex = RegExp(r'[0-9-]');
   final alphabetRegex = RegExp(r'[a-zA-Z]');
@@ -116,29 +122,36 @@ class _LoginScreenState extends State<LoginScreen> {
                     print(response);
                   } else {
                     // Success
-                    // TODO : User 상태에 따라 Redirect 다르게 해야함.
-                    final response = await authRepository.getUserStatus();
-                    if (response is String) {
-                    } else {
-                      GetUserStatusResponse res =
-                          response as GetUserStatusResponse;
-                      UserStatusEnum userStatus = res.userStatus;
+                    try {
+                      UserInfoResponse userInfo = await userRepository.getUserInfo();
 
-                      if (userStatus == UserStatusEnum.INITIAL) {
-                        // 신청 X -> register screen
-                        Navigator.pushNamed(context, '/user/status/initial');
-                      } else if (userStatus == UserStatusEnum.REQUEST) {
-                        Navigator.pushNamed(context, '/user/status/register');
-                      } else if (userStatus == UserStatusEnum.ACCEPT) {
-                        // Navigator.pushNamed(context, '/home')
-                      } else if (userStatus == UserStatusEnum.REJECT) {
-                        print(res.rejectReason);
-                        print(res.userStatus);
-                        Navigator.pushNamed(context, '/user/status/reject',
-                            arguments: res.rejectReason);
+                      final userInfoState = Provider.of<UserInfoState>(context, listen: false);
+                      userInfoState.updateUserInfo(
+                        userId: userInfo.userId,
+                        name: userInfo.name,
+                        phoneNumber: userInfo.phoneNumber,
+                        nickname: userInfo.nickname,
+                        targetWakeUpTime: userInfo.targetWakeUpTime,
+                        refundBankName: userInfo.refundBankName,
+                        refundAccount: userInfo.refundAccount,
+                        mode: userInfo.mode,
+                        status: userInfo.status,
+                        rejectReason: userInfo.rejectReason,
+                      );
+
+                      switch (userInfo.status) {
+                        case UserStatusEnum.INITIAL:
+                          Navigator.pushNamed(context, '/user/status/initial');
+                        case UserStatusEnum.REQUEST:
+                          Navigator.pushNamed(context, '/user/status/register');
+                        case UserStatusEnum.ACCEPT:
+                          Navigator.pushNamed(context, '/diary/home'); // TODO: home으로 바꿔야함.
+                        case UserStatusEnum.REJECT:
+                          Navigator.pushNamed(context, '/user/status/reject');
                       }
+                    } on DioException catch (e) {
+                      Navigator.pushNamed(context, '/welcome');
                     }
-
                     // 신청 O ->
                   }
                 }

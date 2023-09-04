@@ -11,7 +11,7 @@ class UserRejectStatusScreen extends StatelessWidget {
     final rejectReason = ModalRoute
         .of(context)!
         .settings
-        .arguments as String;
+        .arguments as String?;
 
     return Scaffold(
       body: Padding(
