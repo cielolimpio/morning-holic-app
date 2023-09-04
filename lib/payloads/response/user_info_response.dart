@@ -17,6 +17,7 @@ class UserInfoResponse {
   final String? refundAccount;
   final ModeEnum? mode;
   final UserStatusEnum status;
+  final String? rejectReason;
 
   UserInfoResponse({
     required this.userId,
@@ -28,6 +29,7 @@ class UserInfoResponse {
     required this.refundAccount,
     required this.mode,
     required this.status,
+    required this.rejectReason,
   });
 
   factory UserInfoResponse.fromJson(Map<String, dynamic> json) =>

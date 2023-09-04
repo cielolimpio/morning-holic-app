@@ -39,7 +39,7 @@ class PhotoViewScreen extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
-          title: "${diaryHomeState.diaryImageType.displayName} 인증",
+          title: "${diaryHomeState.currentDiaryImageType.displayName} 인증",
           centerTitle: true,
         );
       }),

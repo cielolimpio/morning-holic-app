@@ -24,7 +24,8 @@ class _CameraScreenState extends State<CameraScreen> {
   bool _isCameraReady = false;
   int _currentCameraIndex = 0;
   bool _isFlashOn = false;
-  String _now = '';
+  late DateTime _now;
+  String _formattedNow = '';
   late Timer _timer;
 
   @override
@@ -112,7 +113,8 @@ class _CameraScreenState extends State<CameraScreen> {
     final now = DateTime.now().toUtc().add(const Duration(hours: 9));
 
     setState(() {
-      _now =
+      _now = now;
+      _formattedNow =
           '${now.year.toString()}년 ${now.month.toString()}월 ${now.day.toString()}일 (${_getWeekdayString(now)})\n'
           '${now.hour >= 12 ? '오후' : '오전'} ${now.hour >= 12 ? (now.hour - 12).toString() : now.hour.toString()}:${now.minute.toString().padLeft(2, '0')}';
     });
@@ -201,7 +203,7 @@ class _CameraScreenState extends State<CameraScreen> {
             bottom: 45.0,
             left: 25.0,
             child: Text(
-              _now,
+              _formattedNow,
               style: const TextStyle(
                 color: Colors.white,
                 fontFamily: 'RobotoMono',
@@ -322,6 +324,7 @@ class _CameraScreenState extends State<CameraScreen> {
         arguments: CameraImageModel(
           imagePath: imageFile.path,
           isFromBackCamera: _currentCameraIndex == 0,
+          formattedDatetime: _formattedNow,
           datetime: _now,
         ),
       );

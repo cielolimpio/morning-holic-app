@@ -21,6 +21,7 @@ UserInfoResponse _$UserInfoResponseFromJson(Map<String, dynamic> json) =>
       refundAccount: json['refundAccount'] as String?,
       mode: $enumDecodeNullable(_$ModeEnumEnumMap, json['mode']),
       status: $enumDecode(_$UserStatusEnumEnumMap, json['status']),
+      rejectReason: json['rejectReason'] as String?,
     );
 
 Map<String, dynamic> _$UserInfoResponseToJson(UserInfoResponse instance) =>
@@ -34,6 +35,7 @@ Map<String, dynamic> _$UserInfoResponseToJson(UserInfoResponse instance) =>
       'refundAccount': instance.refundAccount,
       'mode': _$ModeEnumEnumMap[instance.mode],
       'status': _$UserStatusEnumEnumMap[instance.status]!,
+      'rejectReason': instance.rejectReason,
     };
 
 const _$BankEnumEnumMap = {

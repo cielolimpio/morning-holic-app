@@ -44,7 +44,7 @@ class AuthRepository {
     try {
       final response = await _dioClient.dioWithoutAccessToken.post('/auth/login', data: loginRequest.toJson());
       final jwtToken = JwtTokenResponse.fromJson(response.data);
-      _dioClient.setUserInfo(jwtToken);
+      await _dioClient.setUserInfo(jwtToken);
     } on DioException catch (e){
       print(e);
       if (e.response?.data is Map && e.response?.data['code'] == 1003) {

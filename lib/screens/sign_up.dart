@@ -40,84 +40,92 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        context: context,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new),
-          color: Colors.black,
-          alignment: Alignment.centerLeft,
-          padding: EdgeInsets.zero,
-          onPressed: () {
-            Navigator.pop(context);
-          },
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus(); // 키보드 닫기 이벤트
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        appBar: CustomAppBar(
+          context: context,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new),
+            color: Colors.black,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.zero,
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
         ),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 30.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const CustomTitle(
-              title: '회원가입',
-              description: '회원가입에 필요한 정보들을 입력해주세요.',
-            ),
-            SizedBox.fromSize(size: const Size(0, 30)),
-            CustomTextFormField(
-              textController: nameController,
-              placeHolder: '이름',
-              maxLength: 10,
-              textInputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]')),
-              ],
-              validator: nameValidator,
-              isValidatorOn: isValidatorOn,
-            ),
-            SizedBox.fromSize(size: const Size(0, 30)),
-            CustomTextFormField(
-              textController: phoneNumberController,
-              placeHolder: '전화번호',
-              maxLength: 13,
-              textInputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
-                PhoneNumDashFormatter(),
-              ],
-              validator: phoneNumberValidator,
-              isValidatorOn: isValidatorOn,
-            ),
-            SizedBox.fromSize(size: const Size(0, 30)),
-            CustomPasswordTextFormField(
-              textController: passwordController,
-              placeHolder: '비밀번호',
-              maxLength: 20,
-              validator: passwordValidator,
-            ),
-            SizedBox.fromSize(size: const Size(0, 30)),
-            CustomPasswordTextFormField(
-              textController: passwordCheckController,
-              placeHolder: '비밀번호 확인',
-              maxLength: 20,
-              validator: passwordValidator,
-            ),
-            SizedBox.fromSize(size: const Size(0, 50)),
-            Column(
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 30.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _Agreements(
-                  agreements: _agreements,
-                  agreementsBool: _agreementsBool,
-                  allAgreeOnPressed: allAgreeOnPressed,
-                  agreementOnPressed: agreementOnPressed,
+                const CustomTitle(
+                  title: '회원가입',
+                  description: '회원가입에 필요한 정보들을 입력해주세요.',
                 ),
-                CustomElevatedButton(
-                  text: '다음',
-                  isDisabled: checkIfButtonDisabled(),
-                  onPressed: buttonOnPressed,
-                )
+                SizedBox.fromSize(size: const Size(0, 30)),
+                CustomTextFormField(
+                  textController: nameController,
+                  placeHolder: '이름',
+                  maxLength: 10,
+                  textInputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[ㄱ-ㅎㅏ-ㅣ가-힣a-zA-Z]')),
+                  ],
+                  validator: nameValidator,
+                  isValidatorOn: isValidatorOn,
+                ),
+                SizedBox.fromSize(size: const Size(0, 30)),
+                CustomTextFormField(
+                  textController: phoneNumberController,
+                  placeHolder: '전화번호',
+                  maxLength: 13,
+                  textInputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'[0-9-]')),
+                    PhoneNumDashFormatter(),
+                  ],
+                  validator: phoneNumberValidator,
+                  isValidatorOn: isValidatorOn,
+                ),
+                SizedBox.fromSize(size: const Size(0, 30)),
+                CustomPasswordTextFormField(
+                  textController: passwordController,
+                  placeHolder: '비밀번호',
+                  maxLength: 20,
+                  validator: passwordValidator,
+                ),
+                SizedBox.fromSize(size: const Size(0, 30)),
+                CustomPasswordTextFormField(
+                  textController: passwordCheckController,
+                  placeHolder: '비밀번호 확인',
+                  maxLength: 20,
+                  validator: passwordValidator,
+                ),
+                SizedBox.fromSize(size: const Size(0, 50)),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    _Agreements(
+                      agreements: _agreements,
+                      agreementsBool: _agreementsBool,
+                      allAgreeOnPressed: allAgreeOnPressed,
+                      agreementOnPressed: agreementOnPressed,
+                    ),
+                    CustomElevatedButton(
+                      text: '다음',
+                      isDisabled: checkIfButtonDisabled(),
+                      onPressed: buttonOnPressed,
+                    )
+                  ],
+                ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );

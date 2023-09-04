@@ -17,8 +17,8 @@ class DioClient {
   Dio get dioWithoutAccessToken => _dioWithoutAccessToken;
 
   var options = BaseOptions(
-    // baseUrl: 'http://54.180.78.85:9001/api/',
-    baseUrl: 'http://localhost:9000/api/',
+    baseUrl: 'http://54.180.78.85:9001/api/',
+    // baseUrl: 'http://localhost:9000/api/',
     contentType: Headers.jsonContentType,
   );
 
@@ -64,9 +64,9 @@ class DioClient {
   }
 
   setUserInfo(JwtTokenResponse jwtToken) async {
-    _setAccessToken(jwtToken.accessToken);
-    _setRefreshToken(jwtToken.refreshToken);
-    _setUserId(jwtToken.userId);
+    await _setAccessToken(jwtToken.accessToken);
+    await _setRefreshToken(jwtToken.refreshToken);
+    await _setUserId(jwtToken.userId);
   }
 
   _getAccessToken() async {
