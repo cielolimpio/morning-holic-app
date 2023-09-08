@@ -290,6 +290,7 @@ class _AgreementsState extends State<_Agreements> {
               style: TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w700,
+                color: Colors.black87,
               ),
             )
           ],
@@ -348,6 +349,7 @@ class _Agreement extends StatelessWidget {
               style: const TextStyle(
                 fontSize: 16.0,
                 fontWeight: FontWeight.w500,
+                color: Colors.black87,
               ),
             ),
           ],

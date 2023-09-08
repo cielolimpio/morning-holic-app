@@ -34,18 +34,22 @@ class _RegisterScreenState extends State<RegisterScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final registerData = ModalRoute.of(context)!.settings.arguments as RegisterResponse?;
+      final registerData =
+          ModalRoute.of(context)!.settings.arguments as RegisterResponse?;
 
       if (registerData != null) {
         setState(() {
           isFirstRegister = false;
         });
-        final bankNameAndAccount = registerData.refundBankNameAndAccount.split(' ');
+        final bankNameAndAccount =
+            registerData.refundBankNameAndAccount.split(' ');
         final bankName = BankEnum.getByDisplayName(bankNameAndAccount[0]);
         bankAccountController.text = bankNameAndAccount[1];
 
-        final registerState = Provider.of<RegisterState>(context, listen: false);
-        registerState.updateWakeupTime(targetWakeUpTimeModelToString(registerData.targetWakeUpTime));
+        final registerState =
+            Provider.of<RegisterState>(context, listen: false);
+        registerState.updateWakeupTime(
+            targetWakeUpTimeModelToString(registerData.targetWakeUpTime));
         registerState.updateRefundBankName(bankName);
         registerState.updateMode(registerData.mode);
       }
@@ -95,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   }
 
   final _targetWakeUpTimeDropdownBox =
-    Consumer<RegisterState>(builder: (context, registerState, _) {
+      Consumer<RegisterState>(builder: (context, registerState, _) {
     return CustomDropdown(
         options: const [
           '4시',
@@ -127,6 +131,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
             style: TextStyle(
               fontSize: 15.0,
               fontWeight: FontWeight.w600,
+              color: Colors.black87,
             ),
           ),
           SizedBox(width: 5),
@@ -161,6 +166,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           style: TextStyle(
             fontSize: 15.0,
             fontWeight: FontWeight.w600,
+            color: Colors.black87,
           ),
         ),
         const SizedBox(height: 10),
@@ -228,17 +234,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
       SizedBox(height: 20),
       Text(
         '입금 계좌: [토스뱅크 100067440674 김유민]',
-        style: TextStyle(fontSize: 13),
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.black87,
+        ),
       ),
       SizedBox(height: 10),
       Text(
         '마일드모드: 30,000원\n챌린지모드: 50,000원',
-        style: TextStyle(fontSize: 13),
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.black87,
+        ),
       ),
       SizedBox(height: 10),
       Text(
         '보증금을 입금해주시면 입금 확인 후 승인됩니다. 입금이 안 된 경우 신청이 반려될 수 있습니다.',
-        style: TextStyle(fontSize: 13),
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.black87,
+        ),
       )
     ],
   );
@@ -286,7 +301,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return TargetWakeUpTimeModel(hour: hour, minute: minute);
   }
 
-  String targetWakeUpTimeModelToString(TargetWakeUpTimeModel targetWakeUpTimeModel) {
+  String targetWakeUpTimeModelToString(
+      TargetWakeUpTimeModel targetWakeUpTimeModel) {
     if (targetWakeUpTimeModel.minute == 0) {
       return "${targetWakeUpTimeModel.hour}시";
     } else {

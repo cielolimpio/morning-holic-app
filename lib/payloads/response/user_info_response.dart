@@ -11,6 +11,7 @@ class UserInfoResponse {
   final int userId;
   final String name;
   final String phoneNumber;
+  final String profileEmoji;
   final String nickname;
   final TargetWakeUpTimeModel? targetWakeUpTime;
   final BankEnum? refundBankName;
@@ -23,6 +24,7 @@ class UserInfoResponse {
     required this.userId,
     required this.name,
     required this.phoneNumber,
+    required this.profileEmoji,
     required this.nickname,
     required this.targetWakeUpTime,
     required this.refundBankName,

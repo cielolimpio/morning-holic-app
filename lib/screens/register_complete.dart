@@ -23,6 +23,7 @@ class RegisterCompleteScreen extends StatelessWidget {
             const Text(
               '신청이 완료되었습니다.',
               style: TextStyle(
+                color: Colors.black87,
                 fontSize: 20,
               ),
               textAlign: TextAlign.center,

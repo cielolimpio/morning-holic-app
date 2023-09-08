@@ -110,7 +110,7 @@ class _CameraScreenState extends State<CameraScreen> {
   }
 
   _updateTime() {
-    final now = DateTime.now().toUtc().add(const Duration(hours: 9));
+    final now = DateTime.now();
 
     setState(() {
       _now = now;
@@ -165,7 +165,7 @@ class _CameraScreenState extends State<CameraScreen> {
         child: const Text(
           '취소',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.black87,
             fontSize: 16.0,
           ),
         ),
@@ -242,6 +242,7 @@ class _CameraScreenState extends State<CameraScreen> {
     return Text(
       text,
       style: TextStyle(
+        color: Colors.black87,
         fontSize: 18.0,
         fontWeight: fontWeight,
       ),

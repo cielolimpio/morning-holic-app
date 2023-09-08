@@ -76,7 +76,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w500,
-              color: Colors.black,
+              color: Colors.black87,
             ),
           ),
         ),
@@ -91,7 +91,7 @@ class _CustomDropdownState extends State<CustomDropdown> {
         item,
         style: const TextStyle(
           fontSize: 14,
-          color: Colors.black,
+          color: Colors.black87,
         ),
         overflow: TextOverflow.ellipsis,
       ),

@@ -1,22 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/entities/picture.dart';
 import 'package:morning_holic_app/provider/diary_home_state.dart';
 import 'package:morning_holic_app/provider/register_state.dart';
 import 'package:morning_holic_app/provider/user_info_state.dart';
 import 'package:morning_holic_app/screens/camera_screen.dart';
-import 'package:morning_holic_app/screens/diary_home.dart';
-import 'package:morning_holic_app/screens/login.dart';
-import 'package:morning_holic_app/screens/nickname.dart';
+import 'package:morning_holic_app/screens/diary_contents_screen.dart';
+import 'package:morning_holic_app/screens/diary_home_screen.dart';
+import 'package:morning_holic_app/screens/login_screen.dart';
+import 'package:morning_holic_app/screens/nickname_screen.dart';
 import 'package:morning_holic_app/screens/photo_preview_screen.dart';
 import 'package:morning_holic_app/screens/photo_view_screen.dart';
-import 'package:morning_holic_app/screens/register.dart';
+import 'package:morning_holic_app/screens/register_screen.dart';
 import 'package:morning_holic_app/screens/register_complete.dart';
-import 'package:morning_holic_app/screens/sign_up.dart';
+import 'package:morning_holic_app/screens/sign_up_screen.dart';
 import 'package:morning_holic_app/screens/splash_screen.dart';
-import 'package:morning_holic_app/screens/user_initial_status.dart';
-import 'package:morning_holic_app/screens/user_register_status.dart';
-import 'package:morning_holic_app/screens/user_reject_status.dart';
-import 'package:morning_holic_app/screens/welcome.dart';
+import 'package:morning_holic_app/screens/user_initial_status_screen.dart';
+import 'package:morning_holic_app/screens/user_register_status_screen.dart';
+import 'package:morning_holic_app/screens/user_reject_status_screen.dart';
+import 'package:morning_holic_app/screens/welcome_screen.dart';
 import 'package:provider/provider.dart';
 
 import 'dtos/camera_image_model.dart';
@@ -61,7 +63,8 @@ class MyApp extends StatelessWidget {
                   cameraImageModel: ModalRoute.of(context)?.settings.arguments
                       as CameraImageModel,
                 ),
-            '/photo/view': (context) => PhotoViewScreen(imagePath: ModalRoute.of(context)?.settings.arguments as String),
+            '/photo/view': (context) => PhotoViewScreen(picture: ModalRoute.of(context)?.settings.arguments as Picture),
+            '/diary/contents': (context) => DiaryContentsScreen(),
             // '/home': (context) => HomeScreen(),
             // '/createProfile' :(context) => CreateProfileScreen(),
             // '/searchDetails' : (context) => SearchDetailsScreen(),

@@ -109,7 +109,7 @@ class _NicknameSettingScreenState extends State<NicknameSettingScreen> {
                                     '선택',
                                     style: TextStyle(
                                       fontSize: 14.0,
-                                      color: Colors.black,
+                                      color: Colors.black87,
                                       decoration: TextDecoration.underline,
                                     ),
                                   ),

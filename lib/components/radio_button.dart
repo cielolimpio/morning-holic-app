@@ -36,6 +36,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
               overflow: TextOverflow.visible,
               maxLines: 1,
               style: TextStyle(
+                color: Colors.black87,
                 fontSize: widget.fontSize,
                 fontWeight: FontWeight.w500,
               ),

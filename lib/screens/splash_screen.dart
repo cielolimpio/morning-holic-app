@@ -2,8 +2,13 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:morning_holic_app/database/picture_provider.dart';
+import 'package:morning_holic_app/dtos/diary_image_model.dart';
+import 'package:morning_holic_app/entities/picture.dart';
+import 'package:morning_holic_app/enums/diary_image_type_enum.dart';
 import 'package:morning_holic_app/enums/user_status_enum.dart';
 import 'package:morning_holic_app/payloads/response/user_info_response.dart';
+import 'package:morning_holic_app/provider/diary_home_state.dart';
 import 'package:morning_holic_app/provider/user_info_state.dart';
 import 'package:morning_holic_app/repositories/user_repository.dart';
 import 'package:provider/provider.dart';
@@ -51,7 +56,9 @@ class _SplashScreenState extends State<SplashScreen>
           });
         });
       } else {
-        Navigator.pushNamed(context, routeName);
+        fetch(routeName).then((_) {
+          Navigator.pushNamed(context, routeName);
+        });
       }
     });
   }
@@ -62,21 +69,7 @@ class _SplashScreenState extends State<SplashScreen>
       return '/welcome';
     } else {
       try {
-        UserInfoResponse userInfo = await userRepository.getUserInfo();
-
-        final userInfoState = Provider.of<UserInfoState>(context, listen: false);
-        userInfoState.updateUserInfo(
-          userId: userInfo.userId,
-          name: userInfo.name,
-          phoneNumber: userInfo.phoneNumber,
-          nickname: userInfo.nickname,
-          targetWakeUpTime: userInfo.targetWakeUpTime,
-          refundBankName: userInfo.refundBankName,
-          refundAccount: userInfo.refundAccount,
-          mode: userInfo.mode,
-          status: userInfo.status,
-          rejectReason: userInfo.rejectReason,
-        );
+        UserInfoResponse userInfo = await userRepository.getUserInfo(context);
 
         switch (userInfo.status) {
           case UserStatusEnum.INITIAL:
@@ -97,6 +90,40 @@ class _SplashScreenState extends State<SplashScreen>
   _getAccessToken() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString('accessToken');
+  }
+
+  Future<void> fetch(String routeName) async {
+    if (routeName == '/diary/home') {
+      // TODO: home으로 바꿔야 함
+      final diaryHomeState = Provider.of<DiaryHomeState>(
+          context, listen: false);
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      DiaryImageTypeEnum.values.forEach((diaryImageType) async {
+        int? pictureId = prefs.getInt(diaryImageType.value);
+        if (pictureId != null) {
+          PictureProvider pictureProvider = PictureProvider();
+          Picture? picture = await pictureProvider.getPictureById(pictureId);
+
+          if (picture != null) {
+            switch (diaryImageType) {
+              case DiaryImageTypeEnum.WAKE_UP:
+                diaryHomeState.updateWakeupImage(picture);
+                break;
+              case DiaryImageTypeEnum.ROUTINE_START:
+                diaryHomeState.updateRoutineStartImage(picture);
+                break;
+              case DiaryImageTypeEnum.ROUTINE_END:
+                diaryHomeState.updateRoutineEndImage(picture);
+                break;
+              case DiaryImageTypeEnum.ROUTINE:
+                diaryHomeState.updateRoutineImage(picture);
+                break;
+            }
+          }
+        }
+      });
+    }
   }
 
   @override

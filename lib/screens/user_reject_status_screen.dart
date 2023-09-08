@@ -30,6 +30,7 @@ class UserRejectStatusScreen extends StatelessWidget {
               '신청이 반려되었습니다.',
               style: TextStyle(
                 fontSize: 20,
+                color: Colors.black87,
               ),
               textAlign: TextAlign.center,
             ),
