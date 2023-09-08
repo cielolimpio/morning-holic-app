@@ -58,7 +58,7 @@ class _WelcomeButtons extends StatelessWidget {
           child: Text(
             '이미 가입된 계정이 있다면?',
             style: TextStyle(
-                color: Colors.black,
+                color: Colors.black87,
                 decoration: TextDecoration.underline,
                 fontSize: 16.0),
           ),

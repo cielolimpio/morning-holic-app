@@ -31,7 +31,7 @@ class CustomAppBar extends PreferredSize {
               title: Text(
                 title,
                 style: const TextStyle(
-                  color: Colors.black,
+                  color: Colors.black87,
                   fontSize: 18.0,
                   fontWeight: FontWeight.w600,
                 ),

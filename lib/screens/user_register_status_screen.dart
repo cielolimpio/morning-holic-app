@@ -117,6 +117,7 @@ class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
               style: const TextStyle(
                 fontSize: 15.0,
                 fontWeight: FontWeight.w600,
+                color: Colors.black87,
               ),
             ),
             const SizedBox(width: 5),
@@ -146,6 +147,7 @@ class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
+                color: Colors.black87,
               ),
             )
           ],
@@ -160,22 +162,34 @@ class _UserRegisterStatusScreenState extends State<UserRegisterStatusScreen> {
     children: [
       Text(
         '입금 계좌: [토스뱅크 100067440674 김유민]',
-        style: TextStyle(fontSize: 13),
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.black87,
+        ),
       ),
       SizedBox(height: 10),
       Text(
         '마일드모드: 30,000원\n챌린지모드: 50,000원',
-        style: TextStyle(fontSize: 13),
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.black87,
+        ),
       ),
       SizedBox(height: 10),
       Text(
         '보증금을 입금해주시면 입금 확인 후 승인됩니다. 입금이 안 된 경우 신청이 반려될 수 있습니다.',
-        style: TextStyle(fontSize: 13),
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.black87,
+        ),
       ),
       SizedBox(height: 10),
       Text(
         '기타 문의 사항은 [URL] 카카오톡 오픈채팅방을 활용해주세요.',
-        style: TextStyle(fontSize: 13),
+        style: TextStyle(
+          fontSize: 13,
+          color: Colors.black87,
+        ),
       ),
     ],
   );

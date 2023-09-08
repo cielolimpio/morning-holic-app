@@ -2,14 +2,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:morning_holic_app/components/app_bar.dart';
+import 'package:morning_holic_app/entities/picture.dart';
 import 'package:morning_holic_app/provider/diary_home_state.dart';
 import 'package:provider/provider.dart';
 
 class PhotoViewScreen extends StatelessWidget {
-  final String imagePath;
+  final Picture picture;
 
   const PhotoViewScreen({
-    required this.imagePath,
+    required this.picture,
     super.key,
   });
 
@@ -18,7 +19,7 @@ class PhotoViewScreen extends StatelessWidget {
     return Scaffold(
       appBar: _getAppBar(context),
       body: SafeArea(
-          child: Image.file(File(imagePath))
+          child: Image.memory(picture.picture!),
       ),
     );
   }

@@ -99,7 +99,7 @@ class _CustomPasswordTextFormFieldState extends State<CustomPasswordTextFormFiel
         counterText: '',
       ),
       style: const TextStyle(
-        color: Colors.black,
+        color: Colors.black87,
         fontSize: 15.0,
       ),
     );

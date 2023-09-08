@@ -11,6 +11,7 @@ UserInfoResponse _$UserInfoResponseFromJson(Map<String, dynamic> json) =>
       userId: json['userId'] as int,
       name: json['name'] as String,
       phoneNumber: json['phoneNumber'] as String,
+      profileEmoji: json['profileEmoji'] as String,
       nickname: json['nickname'] as String,
       targetWakeUpTime: json['targetWakeUpTime'] == null
           ? null
@@ -29,6 +30,7 @@ Map<String, dynamic> _$UserInfoResponseToJson(UserInfoResponse instance) =>
       'userId': instance.userId,
       'name': instance.name,
       'phoneNumber': instance.phoneNumber,
+      'profileEmoji': instance.profileEmoji,
       'nickname': instance.nickname,
       'targetWakeUpTime': instance.targetWakeUpTime,
       'refundBankName': _$BankEnumEnumMap[instance.refundBankName],

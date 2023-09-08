@@ -3,16 +3,15 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:morning_holic_app/components/app_bar.dart';
 import 'package:morning_holic_app/constants/color.dart';
+import 'package:morning_holic_app/database/picture_provider.dart';
 import 'package:morning_holic_app/dtos/camera_image_model.dart';
-import 'package:morning_holic_app/dtos/diary_image_model.dart';
+import 'package:morning_holic_app/entities/picture.dart';
 import 'package:morning_holic_app/enums/diary_image_type_enum.dart';
 import 'package:morning_holic_app/provider/user_info_state.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -32,6 +31,7 @@ class PhotoPreviewScreen extends StatefulWidget {
 
 class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
   var globalKey = new GlobalKey();
+  bool isLoading = false;
 
   @override
   Widget build(BuildContext context) {
@@ -102,6 +102,12 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
                 ),
               ),
             ),
+            if (isLoading)
+              const Center(
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(PRIMARY_COLOR),
+                ),
+              ),
           ],
         ),
       ),
@@ -122,50 +128,83 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
           ),
         ),
         Expanded(
-          child: Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
+          child:
+              Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
             return _getTextButton(
               text: '사진 사용',
               onPressed: () async {
+                setState(() {
+                  isLoading = true;
+                });
                 var renderObject = globalKey.currentContext?.findRenderObject();
                 if (renderObject is RenderRepaintBoundary) {
                   var boundary = renderObject;
                   ui.Image image = await boundary.toImage(pixelRatio: 5.5);
-                  final directory = (await getApplicationDocumentsDirectory()).path;
-                  ByteData byteData = (await image.toByteData(format: ui.ImageByteFormat.png))!;
+                  ByteData byteData =
+                      (await image.toByteData(format: ui.ImageByteFormat.png))!;
                   Uint8List pngBytes = byteData.buffer.asUint8List();
-                  DateTime now = DateTime.now();
-                  File imgFile = File('$directory/${now.year}${now.month}${now.day}${now.hour}${now.minute}${now.second}.png');
-                  imgFile.writeAsBytes(pngBytes);
-                  String processedImgPath = imgFile.path;
 
-                  CachedNetworkImageProvider(processedImgPath);
-                  SharedPreferences prefs = await SharedPreferences.getInstance();
-                  prefs.setString(diaryHomeState.currentDiaryImageType.value, processedImgPath);
-
-                  final diaryImageModel = DiaryImageModel(
-                    imagePath: processedImgPath,
-                    minusScore: _getMinusScore(), // TODO
-                    dateTime: widget.cameraImageModel.datetime,
+                  PictureProvider pictureProvider = PictureProvider();
+                  Picture pic = Picture(
+                    picture: pngBytes,
+                    minusScore: _getMinusScore(),
+                    datetime: widget.cameraImageModel.datetime.toString(),
                   );
+                  int pictureId = await pictureProvider.insertAndGetId(pic);
+
+                  SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                  if (diaryHomeState.currentDiaryImageType ==
+                      DiaryImageTypeEnum.WAKE_UP) {
+                    await _initializeDiaryImageTypeToImagePath(prefs);
+                  }
+
+                  prefs.setInt(
+                      diaryHomeState.currentDiaryImageType.value, pictureId);
+
+                  setState(() {
+                    isLoading = false;
+                  });
 
                   switch (diaryHomeState.currentDiaryImageType) {
                     case DiaryImageTypeEnum.WAKE_UP:
-                      diaryHomeState.updateWakeupImage(diaryImageModel);
+                      diaryHomeState.updateWakeupImage(pic);
+                      Navigator.popUntil(
+                          context, ModalRoute.withName('/diary/home'));
+                      break;
                     case DiaryImageTypeEnum.ROUTINE_START:
-                      diaryHomeState.updateRoutineStartImage(diaryImageModel);
+                      diaryHomeState.updateRoutineStartImage(pic);
+                      Navigator.popUntil(
+                          context, ModalRoute.withName('/diary/home'));
+                      break;
                     case DiaryImageTypeEnum.ROUTINE_END:
-                      diaryHomeState.updateRoutineEndImage(diaryImageModel);
+                      diaryHomeState.updateRoutineEndImage(pic);
+                      Navigator.pushNamed(
+                        context,
+                        '/diary/contents',
+                      );
+                      break;
                     case DiaryImageTypeEnum.ROUTINE:
-                      diaryHomeState.updateRoutineImage(diaryImageModel);
+                      diaryHomeState.updateRoutineImage(pic);
+                      Navigator.pushNamed(
+                        context,
+                        '/diary/contents',
+                      );
+                      break;
                   }
                 }
-                Navigator.popUntil(context, ModalRoute.withName('/diary/home'));
               },
             );
           }),
         ),
       ],
     );
+  }
+
+  _initializeDiaryImageTypeToImagePath(SharedPreferences prefs) async {
+    DiaryImageTypeEnum.values.forEach((element) async {
+      await prefs.remove(element.value);
+    });
   }
 
   TextButton _getTextButton(
@@ -179,7 +218,7 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
         text,
         style: const TextStyle(
           fontSize: 18.0,
-          color: Colors.black,
+          color: Colors.black87,
         ),
       ),
     );
@@ -189,19 +228,23 @@ class _PhotoPreviewScreenState extends State<PhotoPreviewScreen> {
     final userInfoState = Provider.of<UserInfoState>(context, listen: false);
     final diaryHomeState = Provider.of<DiaryHomeState>(context, listen: false);
 
-    List<Duration> durationsToAdd = diaryHomeState.getDurationToAddToTargetTime();
+    List<Duration> durationsToAdd =
+        diaryHomeState.getDurationToAddToTargetTime();
     DateTime datetime = widget.cameraImageModel.datetime;
 
-    var targetTime = DateTime(datetime.year, datetime.month, datetime.day,
-        userInfoState.targetWakeUpTime!.hour, userInfoState.targetWakeUpTime!.minute)
+    var targetTime = DateTime(
+            datetime.year,
+            datetime.month,
+            datetime.day,
+            userInfoState.targetWakeUpTime!.hour,
+            userInfoState.targetWakeUpTime!.minute)
         .toUtc()
         .add(const Duration(hours: 9))
         .add(durationsToAdd[0]);
 
     if (targetTime.isBefore(datetime)) {
-      targetTime = targetTime
-          .subtract(durationsToAdd[0])
-          .add(durationsToAdd[1]);
+      targetTime =
+          targetTime.subtract(durationsToAdd[0]).add(durationsToAdd[1]);
 
       if (targetTime.isBefore(datetime)) {
         return 2;

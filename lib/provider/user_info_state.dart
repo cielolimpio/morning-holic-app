@@ -8,6 +8,7 @@ class UserInfoState extends ChangeNotifier {
   int? userId;
   String? name;
   String? phoneNumber;
+  String? profileEmoji;
   String? nickname;
   TargetWakeUpTimeModel? targetWakeUpTime;
   BankEnum? refundBankName;
@@ -20,6 +21,7 @@ class UserInfoState extends ChangeNotifier {
     required int userId,
     required String name,
     required String phoneNumber,
+    required String profileEmoji,
     required String nickname,
     required TargetWakeUpTimeModel? targetWakeUpTime,
     required BankEnum? refundBankName,
@@ -31,6 +33,7 @@ class UserInfoState extends ChangeNotifier {
     this.userId = userId;
     this.name = name;
     this.phoneNumber = phoneNumber;
+    this.profileEmoji = profileEmoji;
     this.nickname = nickname;
     this.targetWakeUpTime = targetWakeUpTime;
     this.refundBankName = refundBankName;

@@ -1,11 +1,11 @@
 class DiaryImageModel {
   String? imagePath;
   int minusScore = 0;
-  DateTime? dateTime;
+  DateTime? datetime;
 
   DiaryImageModel({
     this.imagePath,
     required this.minusScore,
-    this.dateTime,
+    this.datetime,
   });
 }

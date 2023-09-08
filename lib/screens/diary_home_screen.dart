@@ -4,12 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:morning_holic_app/components/app_bar.dart';
 import 'package:morning_holic_app/components/toggle_button.dart';
 import 'package:morning_holic_app/constants/color.dart';
-import 'package:morning_holic_app/dtos/diary_image_model.dart';
+import 'package:morning_holic_app/entities/picture.dart';
 import 'package:morning_holic_app/enums/diary_image_type_enum.dart';
 import 'package:morning_holic_app/enums/diary_type_enum.dart';
 import 'package:morning_holic_app/provider/user_info_state.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../provider/diary_home_state.dart';
 
@@ -35,15 +34,12 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
   }
 
   _updateTime() {
-    final now = DateTime.now()
-        .toUtc()
-        .add(const Duration(hours: 9)); // Asia/Seoul UTC+9
+    final now = DateTime.now();
 
     final userInfoState = Provider.of<UserInfoState>(context, listen: false);
     final diaryHomeState = Provider.of<DiaryHomeState>(context, listen: false);
 
-    List<Duration> durationsToAdd =
-        diaryHomeState.getDurationToAddToTargetTime();
+    List<Duration> durationsToAdd = diaryHomeState.getDurationToAddToTargetTime();
 
     var targetTime = DateTime(
             now.year,
@@ -51,8 +47,6 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
             now.day,
             userInfoState.targetWakeUpTime!.hour,
             userInfoState.targetWakeUpTime!.minute)
-        .toUtc()
-        .add(const Duration(hours: 17))
         .add(durationsToAdd[0]);
 
     if (targetTime.isBefore(now)) {
@@ -62,11 +56,13 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
       if (targetTime.isBefore(now)) {
         if (diaryHomeState.wakeUpImage == null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            diaryHomeState.updateWakeupImage(DiaryImageModel(
-              imagePath: null,
-              minusScore: 2,
-              dateTime: null,
-            ));
+            diaryHomeState.updateWakeupImage(
+              Picture(
+                picture: null,
+                minusScore: 2,
+                datetime: null,
+              )
+            );
             minusScore = 0;
           });
         } else {
@@ -166,6 +162,7 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
         Text(
           target,
           style: TextStyle(
+            color: Colors.black87,
             fontFamily: 'RobotoMono',
             fontSize: 18,
             fontWeight: FontWeight.w600,
@@ -174,6 +171,7 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
         Text(
           "까지 남은 시간 : ",
           style: TextStyle(
+            color: Colors.black87,
             fontFamily: 'RobotoMono',
             fontSize: 18,
           ),
@@ -196,6 +194,7 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
       Text(
         "실내",
         style: TextStyle(
+          color: Colors.black87,
           fontWeight: FontWeight.w600,
           fontSize: 15.0,
         ),
@@ -203,6 +202,7 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
       Text(
         "야외",
         style: TextStyle(
+          color: Colors.black87,
           fontWeight: FontWeight.w600,
           fontSize: 15.0,
         ),
@@ -216,22 +216,22 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
     required String text,
   }) {
     return Consumer<DiaryHomeState>(builder: (builder, diaryHomeState, _) {
-      DiaryImageModel? diaryImageModel;
+      Picture? picture;
       switch (diaryImageType) {
         case DiaryImageTypeEnum.WAKE_UP:
-          diaryImageModel = diaryHomeState.wakeUpImage;
+          picture = diaryHomeState.wakeUpImage;
         case DiaryImageTypeEnum.ROUTINE_START:
-          diaryImageModel = diaryHomeState.routineStartImage;
+          picture = diaryHomeState.routineStartImage;
         case DiaryImageTypeEnum.ROUTINE_END:
-          diaryImageModel = diaryHomeState.routineEndImage;
+          picture = diaryHomeState.routineEndImage;
         case DiaryImageTypeEnum.ROUTINE:
-          diaryImageModel = diaryHomeState.routineImage;
+          picture = diaryHomeState.routineImage;
       }
 
       bool? isChecked;
-      if (diaryImageModel == null) {
+      if (picture == null) {
         isChecked = null;
-      } else if (diaryImageModel.imagePath == null) {
+      } else if (picture.picture == null) {
         isChecked = false;
       } else {
         isChecked = true;
@@ -317,7 +317,7 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
     return Text(
       text,
       style: const TextStyle(
-        color: Colors.black,
+        color: Colors.black87,
         fontWeight: FontWeight.w600,
         fontSize: 15.0,
       ),
@@ -341,13 +341,22 @@ class _DiaryHomeState extends State<DiaryHomeScreen> {
               '/camera',
             );
           } else if (isAlreadyTaken) {
-            SharedPreferences prefs = await SharedPreferences.getInstance();
-            String imagePath = prefs.getString(diaryImageType.value)!;
-            diaryHomeState.updateDiaryImageType(diaryImageType);
+            Picture picture;
+            switch (diaryImageType) {
+              case DiaryImageTypeEnum.WAKE_UP:
+                picture = diaryHomeState.wakeUpImage!;
+              case DiaryImageTypeEnum.ROUTINE_START:
+                picture = diaryHomeState.routineStartImage!;
+              case DiaryImageTypeEnum.ROUTINE_END:
+                picture = diaryHomeState.routineEndImage!;
+              case DiaryImageTypeEnum.ROUTINE:
+                picture = diaryHomeState.routineImage!;
+            }
+
             Navigator.pushNamed(
               context,
               '/photo/view',
-              arguments: imagePath,
+              arguments: picture,
             );
           }
         },
